@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<landingPage>
+  <metadata>
+    <brand>Balance Beam Bookkeeping and Tax</brand>
+    <pageType>Landing page</pageType>
+    <urlPath>/extension-cleanup-review</urlPath>
+    <titleTag>Extension Cleanup Review for Small Business Books | Balance Beam</titleTag>
+    <metaDescription>Filed a tax extension because your books were not ready? Balance Beam helps Schedule C filers, partnerships, and S Corps clean up books before extended filing deadlines.</metaDescription>
+    <primaryKeyword>extension cleanup review</primaryKeyword>
+    <secondaryKeywords>
+      <keyword>bookkeeping cleanup before tax filing</keyword>
+      <keyword>tax extension books not ready</keyword>
+      <keyword>Schedule C bookkeeping cleanup</keyword>
+      <keyword>S Corp bookkeeping cleanup</keyword>
+      <keyword>partnership tax extension bookkeeping</keyword>
+      <keyword>tax-ready bookkeeping</keyword>
+    </secondaryKeywords>
+    <audience>Schedule C filers, single-member LLC owners, partnerships, and S corporations whose tax returns were extended because their books were not ready</audience>
+    <primaryCTA>Request an Extension Cleanup Review</primaryCTA>
+    <coreMessage>An extension gives you more time to file. It does not clean up the books.</coreMessage>
+    <voice>
+      <tone>professional, calm, plain-English</tone>
+      <avoid>hype, fear-based IRS language, tax hacks, loopholes, refund promises</avoid>
+    </voice>
+  </metadata>
+
+  <sections>
+    <section id="hero" order="1" type="hero">
+      <eyebrow>For small-business owners on extension</eyebrow>
+      <headline>Filed an extension because your books were not ready?</headline>
+      <subheadline>An extension gives you more time to file. It does not clean up the books. Balance Beam helps small-business owners review, organize, and clean up the bookkeeping issues that delay tax preparation.</subheadline>
+      <aboveTheFoldHook>If your 2025 tax return was extended because the books were behind, unreconciled, or unclear, the deadline is still coming. The right next step is not to wait until September or October. It is to find out what needs to be fixed before the return can be prepared.</aboveTheFoldHook>
+      <primaryCTA>
+        <label>Request an Extension Cleanup Review</label>
+        <action>open-intake-form</action>
+      </primaryCTA>
+      <secondaryCTA>
+        <label>See what we review</label>
+        <action>scroll-to-what-we-review</action>
+      </secondaryCTA>
+      <trustLine>For Schedule C filers, single-member LLCs, partnerships, S corporations, and small-business owners who need tax-ready books before filing.</trustLine>
+    </section>
+
+    <section id="problem" order="2" type="problem">
+      <headline>The extension solved the filing deadline. It did not solve the bookkeeping problem.</headline>
+      <body>
+        <paragraph>Many small-business owners file extensions because the tax return cannot be prepared from the information available in March or April. The issue is often not the tax form itself. The issue is that the books are behind, accounts are not reconciled, transactions are unclear, or the reports cannot be trusted yet.</paragraph>
+        <paragraph>That is fixable, but it needs a process. Waiting until the extended deadline gets closer usually creates the same problem again, only with less time to clean it up.</paragraph>
+      </body>
+      <callout>If the books were not ready by the original deadline, they need attention before the extended deadline.</callout>
+    </section>
+
+    <section id="deadline-urgency" order="3" type="deadlineUrgency">
+      <headline>Know the deadline you are working toward.</headline>
+      <intro>Different business types have different extended federal filing deadlines. Your entity type matters, and cleanup should start early enough to leave time for tax preparation after the books are ready.</intro>
+      <deadlineCards>
+        <card id="schedule-c">
+          <entityType>Schedule C filers and single-member LLCs</entityType>
+          <description>If you report business income on Schedule C with your individual Form 1040 and filed a valid extension, your extended federal filing deadline is generally October 15, 2026.</description>
+          <deadlineDate>2026-10-15</deadlineDate>
+          <deadlineLabel>October 15, 2026</deadlineLabel>
+          <ctaButton>Start my October 15 cleanup review</ctaButton>
+        </card>
+        <card id="partnership">
+          <entityType>Partnerships and multi-member LLCs taxed as partnerships</entityType>
+          <description>If your calendar-year partnership filed an extension for Form 1065, your extended federal filing deadline is generally September 15, 2026.</description>
+          <deadlineDate>2026-09-15</deadlineDate>
+          <deadlineLabel>September 15, 2026</deadlineLabel>
+          <ctaButton>Start my September 15 cleanup review</ctaButton>
+        </card>
+        <card id="s-corp">
+          <entityType>S corporations</entityType>
+          <description>If your calendar-year S corporation filed an extension for Form 1120-S, your extended federal filing deadline is generally September 15, 2026.</description>
+          <deadlineDate>2026-09-15</deadlineDate>
+          <deadlineLabel>September 15, 2026</deadlineLabel>
+          <ctaButton>Start my September 15 cleanup review</ctaButton>
+        </card>
+      </deadlineCards>
+      <caution>An extension is generally an extension of time to file, not an extension of time to pay. C corporation deadlines may differ depending on fiscal year and entity-specific facts. If you are unsure what applies to your situation, talk with your tax professional.</caution>
+    </section>
+
+    <section id="benefits" order="4" type="benefits">
+      <headline>What an Extension Cleanup Review helps you clarify</headline>
+      <bullets>
+        <bullet>Identify whether your books are ready for tax preparation.</bullet>
+        <bullet>Find unreconciled bank and credit card accounts.</bullet>
+        <bullet>Spot owner draws, transfers, and personal expenses that need review.</bullet>
+        <bullet>Determine whether QuickBooks cleanup is needed before filing.</bullet>
+        <bullet>Separate bookkeeping cleanup from tax preparation scope.</bullet>
+        <bullet>Create a document request list so missing records are easier to track.</bullet>
+        <bullet>Build a clear path from extension to filing.</bullet>
+        <bullet>Decide whether monthly bookkeeping should begin after the cleanup is complete.</bullet>
+      </bullets>
+    </section>
+
+    <section id="what-we-review" order="5" type="whatWeReview">
+      <headline>What Balance Beam looks at</headline>
+      <body>The review is designed to identify the bookkeeping issues that may prevent your tax return from being prepared accurately and efficiently. It is not a shortcut around cleanup. It is the first step in understanding what cleanup is actually required.</body>
+      <checklist>
+        <item>Bank and credit card reconciliation status</item>
+        <item>Missing or incomplete statements</item>
+        <item>Uncategorized transactions</item>
+        <item>Misclassified income or expenses</item>
+        <item>Owner draws, distributions, transfers, and reimbursements</item>
+        <item>Personal expenses paid from business accounts</item>
+        <item>Duplicate income or missing deposits</item>
+        <item>Payroll or contractor payment issues that affect the books</item>
+        <item>QuickBooks chart of accounts issues</item>
+        <item>Year-end reports needed for tax preparation</item>
+        <item>Whether prior months need catch-up bookkeeping</item>
+      </checklist>
+    </section>
+
+    <section id="who-this-is-for" order="6" type="whoThisIsFor">
+      <headline>This is for you if:</headline>
+      <bullets>
+        <bullet>You filed an extension because your books were not ready.</bullet>
+        <bullet>Your tax preparer asked for cleaner reports.</bullet>
+        <bullet>You are behind on bookkeeping for 2025.</bullet>
+        <bullet>Your QuickBooks file does not match your bank balances.</bullet>
+        <bullet>You are not sure whether your profit and loss report is accurate.</bullet>
+        <bullet>You have business and personal activity mixed together.</bullet>
+        <bullet>You need cleanup before tax preparation can move forward.</bullet>
+        <bullet>You want to avoid repeating the same extension cycle next year.</bullet>
+      </bullets>
+    </section>
+
+    <section id="who-this-is-not-for" order="7" type="whoThisIsNotFor">
+      <headline>This is probably not the right fit if:</headline>
+      <bullets>
+        <bullet>Your books are already reconciled and tax-ready.</bullet>
+        <bullet>You only need someone to e-file a completed return.</bullet>
+        <bullet>You are looking for a no-records estimate.</bullet>
+        <bullet>You do not want to provide statements, reports, or accounting access.</bullet>
+        <bullet>You are only looking for the cheapest possible bookkeeping option.</bullet>
+      </bullets>
+    </section>
+
+    <section id="process" order="8" type="process">
+      <headline>How the Extension Cleanup Review works</headline>
+      <steps>
+        <step number="1">
+          <title>Complete the intake</title>
+          <description>Tell us your entity type, deadline, bookkeeping status, accounting software, and what is blocking tax preparation.</description>
+        </step>
+        <step number="2">
+          <title>Schedule a consultation</title>
+          <description>We review your intake and talk through whether you need cleanup, catch-up bookkeeping, tax preparation support, or monthly bookkeeping after filing.</description>
+        </step>
+        <step number="3">
+          <title>Identify what is missing</title>
+          <description>We help clarify which statements, reports, accounts, and records are needed before the books can support tax preparation.</description>
+        </step>
+        <step number="4">
+          <title>Get a recommended path</title>
+          <description>You receive a clear next step: cleanup, monthly bookkeeping, tax prep plus books review, back-filing support, or another path if Balance Beam is not the right fit.</description>
+        </step>
+        <step number="5">
+          <title>Move into a structured workflow</title>
+          <description>If we work together, the engagement moves through a secure, organized workflow with document requests, task status, and next steps clearly tracked.</description>
+        </step>
+      </steps>
+    </section>
+
+    <section id="differentiators" order="9" type="differentiators">
+      <headline>Bookkeeping cleanup should not live in scattered emails.</headline>
+      <body>Balance Beam uses a structured client workflow to reduce the back-and-forth that often slows down cleanup and tax preparation. The goal is simple: know what is missing, know what is being reviewed, and know what happens next.</body>
+      <bullets>
+        <bullet>Secure document collection</bullet>
+        <bullet>Clear intake questions</bullet>
+        <bullet>Defined cleanup scope</bullet>
+        <bullet>Tax-ready bookkeeping focus</bullet>
+        <bullet>Founder-led review and communication</bullet>
+        <bullet>Year-round bookkeeping path after filing</bullet>
+        <bullet>Portal-driven workflow instead of loose email threads</bullet>
+      </bullets>
+    </section>
+
+    <section id="objection-handling" order="10" type="objectionHandling">
+      <objections>
+        <objection number="1">
+          <question>I already filed an extension, so I have time.</question>
+          <answer>You have more time to file, but the books still need to be reviewed and cleaned up before the return can be prepared. The longer cleanup waits, the less time remains for tax preparation.</answer>
+        </objection>
+        <objection number="2">
+          <question>I just need someone to do my taxes.</question>
+          <answer>If the books are clean, tax preparation may be straightforward. If the books are not ready, the tax return depends on cleanup first. Balance Beam can help determine which situation you are in.</answer>
+        </objection>
+        <objection number="3">
+          <question>My books are in QuickBooks, so they should be fine.</question>
+          <answer>QuickBooks is a tool. The file still needs reconciled accounts, accurate categories, and properly handled owner transactions. A report from QuickBooks is only useful if the activity behind it has been reviewed.</answer>
+        </objection>
+        <objection number="4">
+          <question>I do not know how far behind I am.</question>
+          <answer>That is exactly why the review exists. The first step is identifying what months, accounts, and records need attention.</answer>
+        </objection>
+        <objection number="5">
+          <question>Can you just give me a monthly bookkeeping price?</question>
+          <answer>Monthly bookkeeping pricing depends on whether the books are current or need cleanup first. If prior activity is unreliable, cleanup should be scoped separately before monthly service begins.</answer>
+        </objection>
+      </objections>
+    </section>
+
+    <section id="mid-page-cta" order="11" type="midPageCTA">
+      <headline>Do not wait until the extended deadline to find out your books still are not ready.</headline>
+      <body>Start with a review. We will help you understand what needs cleanup, what records are missing, and what path makes sense before filing.</body>
+      <ctaButton>
+        <label>Request an Extension Cleanup Review</label>
+        <action>open-intake-form</action>
+      </ctaButton>
+    </section>
+
+    <section id="intake-form" order="12" type="intakeForm">
+      <headline>Request an Extension Cleanup Review</headline>
+      <intro>Complete this short intake so we can understand your entity type, filing deadline, bookkeeping status, and what is holding up tax preparation.</intro>
+      <fieldGroups>
+        <fieldGroup id="contact-information">
+          <label>Contact information</label>
+          <fields>
+            <field name="firstName" type="text" required="true">First name</field>
+            <field name="lastName" type="text" required="true">Last name</field>
+            <field name="email" type="email" required="true">Email</field>
+            <field name="phone" type="tel" required="true">Phone</field>
+            <field name="businessName" type="text" required="true">Business name</field>
+            <field name="businessWebsite" type="text" required="false">Business website or social profile</field>
+          </fields>
+        </fieldGroup>
+        <fieldGroup id="business-details">
+          <label>Business details</label>
+          <fields>
+            <field name="entityType" type="select" required="true">
+              <label>Entity type</label>
+              <options>
+                <option>Schedule C / sole proprietor</option>
+                <option>Single-member LLC filing with Form 1040</option>
+                <option>Partnership / multi-member LLC</option>
+                <option>S corporation</option>
+                <option>C corporation</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="state" type="text" required="true">State</field>
+            <field name="industry" type="text" required="false">Industry</field>
+            <field name="bookkeepingSoftware" type="select" required="true">
+              <label>Current bookkeeping software</label>
+              <options>
+                <option>QuickBooks Online</option>
+                <option>QuickBooks Desktop</option>
+                <option>Xero</option>
+                <option>Spreadsheet</option>
+                <option>No system</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+          </fields>
+        </fieldGroup>
+        <fieldGroup id="extension-status">
+          <label>Extension and tax preparation status</label>
+          <fields>
+            <field name="filedExtension" type="select" required="true">
+              <label>Did you file a federal extension for the 2025 tax return?</label>
+              <options>
+                <option>Yes</option>
+                <option>No</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="deadline" type="select" required="true">
+              <label>Which deadline are you working toward?</label>
+              <options>
+                <option>September 15, 2026</option>
+                <option>October 15, 2026</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="extendedBecauseBooks" type="select" required="true">
+              <label>Did you extend because the books were not ready?</label>
+              <options>
+                <option>Yes</option>
+                <option>Partly</option>
+                <option>No</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="preparerRequest" type="select" required="false">
+              <label>Has a tax preparer already requested reports, records, or cleanup?</label>
+              <options>
+                <option>Yes</option>
+                <option>No</option>
+                <option>Not yet</option>
+              </options>
+            </field>
+          </fields>
+        </fieldGroup>
+        <fieldGroup id="bookkeeping-status">
+          <label>Bookkeeping status</label>
+          <fields>
+            <field name="reconciledThroughYearEnd" type="select" required="true">
+              <label>Are your 2025 books reconciled through year-end?</label>
+              <options>
+                <option>Yes</option>
+                <option>No</option>
+                <option>Partly</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="monthsUnreconciled" type="select" required="true">
+              <label>How many months are currently unreconciled or incomplete?</label>
+              <options>
+                <option>None</option>
+                <option>1 to 3 months</option>
+                <option>4 to 6 months</option>
+                <option>7 to 12 months</option>
+                <option>More than 12 months</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="accountCount" type="select" required="true">
+              <label>How many bank and credit card accounts need review?</label>
+              <options>
+                <option>1 to 2</option>
+                <option>3 to 5</option>
+                <option>6 or more</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+            <field name="businessActivities" type="multiselect" required="false">
+              <label>Do you have payroll, sales tax, inventory, loans, or contractor payments?</label>
+              <options>
+                <option>Payroll</option>
+                <option>Sales tax</option>
+                <option>Inventory</option>
+                <option>Business loans</option>
+                <option>Contractor payments</option>
+                <option>None of these</option>
+                <option>Not sure</option>
+              </options>
+            </field>
+          </fields>
+        </fieldGroup>
+        <fieldGroup id="help-needed">
+          <label>What help do you need?</label>
+          <fields>
+            <field name="lookingFor" type="select" required="true">
+              <label>What are you looking for?</label>
+              <options>
+                <option>Cleanup before tax preparation</option>
+                <option>Catch-up bookkeeping</option>
+                <option>Tax preparation and books review</option>
+                <option>Monthly bookkeeping after filing</option>
+                <option>Back-filing or prior-year help</option>
+                <option>Not sure yet</option>
+              </options>
+            </field>
+            <field name="biggestIssue" type="select" required="true">
+              <label>What is the biggest issue holding up filing?</label>
+              <options>
+                <option>Books are behind</option>
+                <option>Accounts are not reconciled</option>
+                <option>Missing documents or statements</option>
+                <option>QuickBooks is messy</option>
+                <option>Prior bookkeeper issue</option>
+                <option>I do not know what is wrong</option>
+                <option>Other</option>
+              </options>
+            </field>
+            <field name="additionalNotes" type="textarea" required="false">Anything else we should know before the consultation?</field>
+          </fields>
+        </fieldGroup>
+      </fieldGroups>
+      <consentCopy>By submitting this form, you are requesting that Balance Beam Bookkeeping and Tax contact you about bookkeeping cleanup, tax preparation support, or related services. Submitting this form does not create a client relationship. Engagement terms must be accepted separately before services begin.</consentCopy>
+      <submitButton>Request my cleanup review</submitButton>
+      <confirmationMessage>Thank you. We received your Extension Cleanup Review request. The next step is to schedule your consultation and gather the records needed to understand what is holding up tax preparation.</confirmationMessage>
+    </section>
+
+    <section id="final-cta" order="13" type="finalCTA">
+      <headline>Your extended deadline is closer than it feels.</headline>
+      <body>If your return was extended because the books were not ready, now is the time to review the file, identify what is missing, and build a path to filing.</body>
+      <ctaButton>
+        <label>Start the Extension Cleanup Review</label>
+        <action>open-intake-form</action>
+      </ctaButton>
+      <supportText>Balance Beam will help you determine whether you need cleanup, catch-up bookkeeping, tax preparation support, or a monthly bookkeeping process after filing.</supportText>
+    </section>
+
+    <section id="faq" order="14" type="faq">
+      <items>
+        <item>
+          <question>Does filing an extension mean I have more time to pay?</question>
+          <answer>Generally, no. An extension gives more time to file the return, not more time to pay tax that was due by the original deadline. If you are unsure whether you paid enough with your extension, talk with your tax professional.</answer>
+        </item>
+        <item>
+          <question>What if I do not know whether I am a Schedule C filer, partnership, or S corporation?</question>
+          <answer>That is common. The intake form includes an "I'm not sure" option. We can help identify the filing path based on your business structure and prior-year return, but formal advice requires an engagement.</answer>
+        </item>
+        <item>
+          <question>Can you prepare the tax return too?</question>
+          <answer>Balance Beam provides tax preparation and bookkeeping services. If your books need cleanup before the return can be prepared, we will separate the cleanup scope from the tax preparation scope so the work is clear.</answer>
+        </item>
+        <item>
+          <question>What if my tax preparer already filed the extension?</question>
+          <answer>That is fine. The review focuses on the bookkeeping issues that may still need to be resolved before the return can be prepared. If another preparer is filing the return, the goal may be to provide cleaner reports and records for that preparer.</answer>
+        </item>
+        <item>
+          <question>What if I use QuickBooks?</question>
+          <answer>QuickBooks helps organize the records, but it does not guarantee the books are accurate. Accounts still need to be reconciled, transactions reviewed, and owner activity handled correctly.</answer>
+        </item>
+        <item>
+          <question>Do I need cleanup or monthly bookkeeping?</question>
+          <answer>It depends on whether the books are current and reliable. If prior activity is incomplete or inaccurate, cleanup usually comes first. Monthly bookkeeping can begin after the file is stable.</answer>
+        </item>
+        <item>
+          <question>How fast can cleanup be completed?</question>
+          <answer>Timing depends on the number of months, accounts, missing records, and complexity of the business. The review helps determine the likely scope and next steps.</answer>
+        </item>
+        <item>
+          <question>Is this only for California businesses?</question>
+          <answer>Balance Beam is based in California and works heavily with California small-business compliance, but the review may be relevant to business owners outside California as well. State-specific requirements should be confirmed during the consultation.</answer>
+        </item>
+        <item>
+          <question>Is this tax advice?</question>
+          <answer>This page is general information, not advice for your specific situation. If you want to talk through how this applies to your business, reach out.</answer>
+        </item>
+      </items>
+    </section>
+  </sections>
+
+  <implementationNotes>
+    <recommendedModules>
+      <module order="1">Hero</module>
+      <module order="2">Problem</module>
+      <module order="3">Deadline urgency</module>
+      <module order="4">Benefits</module>
+      <module order="5">What we review</module>
+      <module order="6">Who this is for</module>
+      <module order="7">Who this is not for</module>
+      <module order="8">Process</module>
+      <module order="9">Differentiators</module>
+      <module order="10">Objection handling</module>
+      <module order="11">Intake form</module>
+      <module order="12">FAQ</module>
+      <module order="13">Final CTA</module>
+    </recommendedModules>
+  </implementationNotes>
+
+  <trackingEvents>
+    <event>extension_cleanup_page_view</event>
+    <event>extension_cleanup_primary_cta_click</event>
+    <event>extension_cleanup_secondary_cta_click</event>
+    <event>extension_cleanup_form_start</event>
+    <event>extension_cleanup_form_submit</event>
+    <event>extension_cleanup_booking_click</event>
+    <event>extension_cleanup_booking_complete</event>
+  </trackingEvents>
+
+  <sourceNotes>
+    <note>
+      <description>IRS individual extension page</description>
+      <url>https://www.irs.gov/filing/get-an-extension-to-file-your-tax-return</url>
+    </note>
+    <note>
+      <description>IRS Form 7004 instructions</description>
+      <url>https://www.irs.gov/instructions/i7004</url>
+    </note>
+    <note>
+      <description>Deadlines stated on this page reflect calendar-year filers under typical federal rules. C corporation deadlines may differ depending on fiscal year and entity-specific facts. Confirm specifics with a tax professional before relying on dates.</description>
+    </note>
+  </sourceNotes>
+</landingPage>
