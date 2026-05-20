@@ -24,6 +24,54 @@
     </voice>
   </metadata>
 
+  <designSystem>
+    <description>Approved visual direction for the extension cleanup review landing page. The look should feel like a calm financial-services or professional-services site, not a high-pressure lead-gen funnel. Teal is reserved for primary actions, copper is reserved for deadline accents, and color is never the only signal for meaning.</description>
+
+    <typography>
+      <headlines>
+        <fontFamily>Source Serif 4</fontFamily>
+        <weights>Semibold, Bold</weights>
+        <fallback>Georgia, serif</fallback>
+      </headlines>
+      <body>
+        <fontFamily>Source Sans 3</fontFamily>
+        <weights>Regular, Semibold</weights>
+        <fallback>Arial, system sans-serif</fallback>
+      </body>
+      <typeScale>
+        <level name="hero" sizePx="56-64" usage="Hero headline" />
+        <level name="sectionHeading" sizePx="36-44" usage="Section headlines" />
+        <level name="subhead" sizePx="22-26" usage="Subheads and lead-in paragraphs" />
+        <level name="body" sizePx="18" usage="Default body copy" />
+        <level name="label" sizePx="15-16" usage="Labels, eyebrows, form field labels" />
+        <level name="helper" sizePx="14" usage="Helper, caption, fine print (minimum 14px)" />
+      </typeScale>
+    </typography>
+
+    <colorPalette>
+      <color name="Background" token="background" hex="#F7F5EF" usage="Page background" />
+      <color name="Surface" token="surface" hex="#FFFFFF" usage="Cards, form surfaces, primary content blocks" />
+      <color name="Surface Alt" token="surfaceAlt" hex="#EEF4F1" usage="Alternate section backgrounds, callouts" />
+      <color name="Primary Text" token="textPrimary" hex="#17211F" usage="Headlines and primary body text" />
+      <color name="Muted Text" token="textMuted" hex="#5D6863" usage="Secondary text, helper copy, labels" />
+      <color name="Primary CTA" token="ctaPrimary" hex="#0F5F5C" usage="Primary buttons, key interactive elements (teal)" />
+      <color name="CTA Hover" token="ctaHover" hex="#0A4543" usage="Hover and active state for primary CTA" />
+      <color name="Accent Copper" token="accentCopper" hex="#B87333" usage="Reserved accent for deadline highlights only" />
+      <color name="Deadline Text" token="textDeadline" hex="#8A4B1F" usage="Deadline dates and urgency text on warning background" />
+      <color name="Warning Background" token="warningBackground" hex="#FFF4E6" usage="Deadline cards, urgency callouts" />
+      <color name="Border" token="border" hex="#D9D6CC" usage="Card borders, dividers, input borders" />
+    </colorPalette>
+
+    <usageNotes>
+      <note>Aim for a calm, professional financial-services look. Avoid visual patterns associated with cheap lead-gen funnels: aggressive gradients, neon accents, urgency timers, exclamation-heavy buttons.</note>
+      <note>Teal (#0F5F5C) is reserved for primary calls to action and primary interactive states. Do not use teal for decorative elements.</note>
+      <note>Copper (#B87333) is reserved for deadline accents. Do not use copper as a general accent, button color, or for non-deadline UI.</note>
+      <note>Maintain WCAG AA contrast at minimum for all text and interactive elements. Verify Primary Text on Background and Surface, Muted Text on Background, and CTA label color on Primary CTA.</note>
+      <note>Never use color alone to convey meaning. Pair color with an icon, label, or text cue (e.g., deadline cards should include the date as text, not only a colored highlight).</note>
+      <note>Helper and fine-print text must not drop below 14px. Body copy should default to 18px for readability.</note>
+    </usageNotes>
+  </designSystem>
+
   <sections>
     <section id="hero" order="1" type="hero">
       <eyebrow>For small-business owners on extension</eyebrow>

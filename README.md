@@ -5,7 +5,7 @@ Landing page copy and funnel assets for Balance Beam Bookkeeping and Tax.
 ## Contents
 
 - `landing-pages/extension-cleanup-review.md` — Production website copy in Markdown.
-- `landing-pages/extension-cleanup-review.xml` — Structured landing-page source content. Designed to be consumed by tools like Relume to generate the page from named sections (hero, problem, deadline urgency, benefits, what-we-review, who-this-is-for, who-this-is-not-for, process, differentiators, objection handling, mid-page CTA, intake form, final CTA, FAQ) plus metadata, tracking events, and source notes.
+- `landing-pages/extension-cleanup-review.xml` — Structured landing-page source content. Designed to be consumed by tools like Relume to generate the page from named sections (hero, problem, deadline urgency, benefits, what-we-review, who-this-is-for, who-this-is-not-for, process, differentiators, objection handling, mid-page CTA, intake form, final CTA, FAQ) plus metadata, tracking events, source notes, and a `designSystem` block containing the approved typography, color tokens, and visual usage notes.
 
 ## Notes on access
 
