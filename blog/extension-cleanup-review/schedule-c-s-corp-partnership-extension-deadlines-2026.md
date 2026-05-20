@@ -11,6 +11,14 @@ secondary_keywords:
 search_intent: "Business owner is trying to understand which extended filing deadline applies and what that means for bookkeeping cleanup."
 recommended_url: "https://balancebeamtax.com/blog/schedule-c-s-corp-partnership-extension-deadlines-2026"
 conversion_cta_url: "/extension-cleanup-review"
+social_images:
+  open_graph: "/images/extension-cleanup/schedule-c-s-corp-partnership-extension-deadlines-2026-og.png"
+  feed: "/images/extension-cleanup/schedule-c-s-corp-partnership-extension-deadlines-2026-feed.png"
+  story: "/images/extension-cleanup/schedule-c-s-corp-partnership-extension-deadlines-2026-story.png"
+social_funnel:
+  organic_facebook_post_url: "/blog/schedule-c-s-corp-partnership-extension-deadlines-2026"
+  instagram_story_url: "/extension-cleanup-review?utm_source=instagram&utm_medium=organic_social&utm_campaign=extension_cleanup_2026&utm_content=deadline_comparison"
+  paid_social_url: "/extension-cleanup-review?utm_source=meta&utm_medium=paid_social&utm_campaign=extension_cleanup_2026&utm_content=deadline_comparison"
 ---
 
 # Schedule C vs S Corp vs Partnership Extension Deadlines for 2026

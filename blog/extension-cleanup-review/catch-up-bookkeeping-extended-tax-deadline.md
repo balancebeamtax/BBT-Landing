@@ -11,6 +11,14 @@ secondary_keywords:
 search_intent: "Small business owner is behind on bookkeeping and needs to understand what to do before an extended filing deadline."
 recommended_url: "https://balancebeamtax.com/blog/catch-up-bookkeeping-extended-tax-deadline"
 conversion_cta_url: "/extension-cleanup-review"
+social_images:
+  open_graph: "/images/extension-cleanup/catch-up-bookkeeping-extended-tax-deadline-og.png"
+  feed: "/images/extension-cleanup/catch-up-bookkeeping-extended-tax-deadline-feed.png"
+  story: "/images/extension-cleanup/catch-up-bookkeeping-extended-tax-deadline-story.png"
+social_funnel:
+  organic_facebook_post_url: "/blog/catch-up-bookkeeping-extended-tax-deadline"
+  instagram_story_url: "/extension-cleanup-review?utm_source=instagram&utm_medium=organic_social&utm_campaign=extension_cleanup_2026&utm_content=catch_up_bookkeeping"
+  paid_social_url: "/extension-cleanup-review?utm_source=meta&utm_medium=paid_social&utm_campaign=extension_cleanup_2026&utm_content=catch_up_bookkeeping"
 ---
 
 # Catch-Up Bookkeeping Before an Extended Tax Deadline

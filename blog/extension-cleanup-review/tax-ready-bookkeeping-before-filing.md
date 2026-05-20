@@ -11,6 +11,14 @@ secondary_keywords:
 search_intent: "Small business owner wants to know what records and bookkeeping work must be completed before tax preparation."
 recommended_url: "https://balancebeamtax.com/blog/tax-ready-bookkeeping-before-filing"
 conversion_cta_url: "/extension-cleanup-review"
+social_images:
+  open_graph: "/images/extension-cleanup/tax-ready-bookkeeping-before-filing-og.png"
+  feed: "/images/extension-cleanup/tax-ready-bookkeeping-before-filing-feed.png"
+  story: "/images/extension-cleanup/tax-ready-bookkeeping-before-filing-story.png"
+social_funnel:
+  organic_facebook_post_url: "/blog/tax-ready-bookkeeping-before-filing"
+  instagram_story_url: "/extension-cleanup-review?utm_source=instagram&utm_medium=organic_social&utm_campaign=extension_cleanup_2026&utm_content=tax_ready_bookkeeping"
+  paid_social_url: "/extension-cleanup-review?utm_source=meta&utm_medium=paid_social&utm_campaign=extension_cleanup_2026&utm_content=tax_ready_bookkeeping"
 ---
 
 # Tax-Ready Bookkeeping: What Small Business Owners Need Before Filing

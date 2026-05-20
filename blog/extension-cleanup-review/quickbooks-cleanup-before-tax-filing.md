@@ -11,6 +11,14 @@ secondary_keywords:
 search_intent: "Small business owner knows QuickBooks may be messy and wants to understand what must be cleaned up before tax filing."
 recommended_url: "https://balancebeamtax.com/blog/quickbooks-cleanup-before-tax-filing"
 conversion_cta_url: "/extension-cleanup-review"
+social_images:
+  open_graph: "/images/extension-cleanup/quickbooks-cleanup-before-tax-filing-og.png"
+  feed: "/images/extension-cleanup/quickbooks-cleanup-before-tax-filing-feed.png"
+  story: "/images/extension-cleanup/quickbooks-cleanup-before-tax-filing-story.png"
+social_funnel:
+  organic_facebook_post_url: "/blog/quickbooks-cleanup-before-tax-filing"
+  instagram_story_url: "/extension-cleanup-review?utm_source=instagram&utm_medium=organic_social&utm_campaign=extension_cleanup_2026&utm_content=quickbooks_cleanup"
+  paid_social_url: "/extension-cleanup-review?utm_source=meta&utm_medium=paid_social&utm_campaign=extension_cleanup_2026&utm_content=quickbooks_cleanup"
 ---
 
 # QuickBooks Cleanup Before Tax Filing

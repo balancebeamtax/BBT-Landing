@@ -11,6 +11,14 @@ secondary_keywords:
 search_intent: "Small business owner filed an extension because bookkeeping was incomplete and wants a practical next step."
 recommended_url: "https://balancebeamtax.com/blog/filed-tax-extension-books-not-ready"
 conversion_cta_url: "/extension-cleanup-review"
+social_images:
+  open_graph: "/images/extension-cleanup/filed-tax-extension-books-not-ready-og.png"
+  feed: "/images/extension-cleanup/filed-tax-extension-books-not-ready-feed.png"
+  story: "/images/extension-cleanup/filed-tax-extension-books-not-ready-story.png"
+social_funnel:
+  organic_facebook_post_url: "/blog/filed-tax-extension-books-not-ready"
+  instagram_story_url: "/extension-cleanup-review?utm_source=instagram&utm_medium=organic_social&utm_campaign=extension_cleanup_2026&utm_content=extension_books_not_ready"
+  paid_social_url: "/extension-cleanup-review?utm_source=meta&utm_medium=paid_social&utm_campaign=extension_cleanup_2026&utm_content=extension_books_not_ready"
 ---
 
 # What to Do If You Filed a Tax Extension Because Your Books Were Not Ready
