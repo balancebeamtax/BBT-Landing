@@ -175,7 +175,7 @@ function DeadlineUrgency() {
   ];
 
   return (
-    <section id="deadlines" className="border-b border-border bg-surface-alt">
+    <section id="deadlines" className="border-b border-border bg-surface-alt scroll-mt-24">
       <div className="mx-auto max-w-container px-6 py-16 md:py-20">
         <h2 className="font-serif text-3xl md:text-4xl font-semibold text-text-primary">
           Know the deadline you are working toward.
@@ -280,7 +280,7 @@ function WhatWeReview() {
   ];
 
   return (
-    <section id="what-we-review" className="border-b border-border bg-surface-alt">
+    <section id="what-we-review" className="border-b border-border bg-surface-alt scroll-mt-24">
       <div className="mx-auto max-w-container px-6 py-16 md:py-20">
         <h2 className="font-serif text-3xl md:text-4xl font-semibold text-text-primary">
           What Balance Beam looks at
@@ -592,7 +592,7 @@ function FAQ() {
     },
   ];
   return (
-    <section id="faq" className="border-b border-border bg-surface-alt">
+    <section id="faq" className="border-b border-border bg-surface-alt scroll-mt-24">
       <div className="mx-auto max-w-3xl px-6 py-16 md:py-20">
         <h2 className="font-serif text-3xl md:text-4xl font-semibold text-text-primary">
           Frequently asked questions

@@ -98,36 +98,54 @@ export const extensionCleanupFormSchema = z.object({
   business_website: z.string().max(200).optional().or(z.literal("")),
 
   // Business details
-  entity_type: z.enum(entityTypeOptions.map((o) => o.value) as [string, ...string[]]),
+  entity_type: z.enum(entityTypeOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select your entity type" }),
+  }),
   state: z.string().min(2, "State is required").max(50),
   industry: z.string().max(80).optional().or(z.literal("")),
   bookkeeping_software: z.enum(
-    bookkeepingSoftwareOptions.map((o) => o.value) as [string, ...string[]]
+    bookkeepingSoftwareOptions.map((o) => o.value) as [string, ...string[]],
+    { errorMap: () => ({ message: "Select your current bookkeeping software" }) }
   ),
 
   // Extension status
-  filed_extension: z.enum(yesNoUnsureOptions.map((o) => o.value) as [string, ...string[]]),
+  filed_extension: z.enum(yesNoUnsureOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select whether you filed an extension" }),
+  }),
   deadline_segment: z.enum(
-    deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]]
+    deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]],
+    { errorMap: () => ({ message: "Select the deadline that applies to you" }) }
   ),
-  extended_because_books: z.enum(["yes", "partly", "no", "unsure"]),
-  preparer_requested: z.enum(["yes", "no", "not_yet"]),
+  extended_because_books: z.enum(["yes", "partly", "no", "unsure"], {
+    errorMap: () => ({ message: "Tell us whether the books drove the extension" }),
+  }),
+  preparer_requested: z.enum(["yes", "no", "not_yet"], {
+    errorMap: () => ({ message: "Tell us if your preparer has asked for reports" }),
+  }),
 
   // Bookkeeping status
   reconciled_through_yearend: z.enum(
-    reconciledOptions.map((o) => o.value) as [string, ...string[]]
+    reconciledOptions.map((o) => o.value) as [string, ...string[]],
+    { errorMap: () => ({ message: "Select your reconciliation status" }) }
   ),
-  months_behind: z.enum(monthsBehindOptions.map((o) => o.value) as [string, ...string[]]),
+  months_behind: z.enum(monthsBehindOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Estimate how many months are unreconciled" }),
+  }),
   accounts_to_review: z.enum(
-    accountsToReviewOptions.map((o) => o.value) as [string, ...string[]]
+    accountsToReviewOptions.map((o) => o.value) as [string, ...string[]],
+    { errorMap: () => ({ message: "Estimate how many accounts need review" }) }
   ),
   business_factors: z
     .array(z.enum(businessFactorsOptions.map((o) => o.value) as [string, ...string[]]))
     .default([]),
 
   // Help needed
-  help_needed: z.enum(helpNeededOptions.map((o) => o.value) as [string, ...string[]]),
-  biggest_issue: z.enum(biggestIssueOptions.map((o) => o.value) as [string, ...string[]]),
+  help_needed: z.enum(helpNeededOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select what you are looking for" }),
+  }),
+  biggest_issue: z.enum(biggestIssueOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select the biggest issue holding up filing" }),
+  }),
   notes: z.string().max(2000).optional().or(z.literal("")),
 
   // Consent (TCPA + marketing)
