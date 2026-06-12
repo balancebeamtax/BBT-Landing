@@ -181,7 +181,17 @@ export function ExtensionCleanupForm() {
           formRenderTimeRef.current = Date.now() - 5000;
           setErrorMessage("Your session timed out — please press submit again.");
         } else {
-          setErrorMessage("Please check your information and try again.");
+          const FIELD_LABELS: Record<string, string> = {
+            first_name: "first name", last_name: "last name",
+            business_name: "business name", notes: "notes",
+            email: "email", phone: "phone",
+          };
+          const label = body.field ? FIELD_LABELS[body.field] ?? body.field.replace(/_/g, " ") : "";
+          setErrorMessage(
+            label
+              ? `Please check the ${label} field and try again.`
+              : "Please check your information and try again."
+          );
         }
         setSubmitState("error");
         return;

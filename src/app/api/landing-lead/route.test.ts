@@ -242,4 +242,30 @@ describe('POST /api/landing-lead', () => {
     expect(forwarded.email).toBe('jane@example.com');
     expect(forwarded.form_origin).toBe('extension-cleanup-review');
   });
+
+  it('19. multiline notes (\\n) → accepted (200)', async () => {
+    const res = await POST(makeReq(validBody({ notes: 'Filed late.\nBooks ~8 months behind.' })));
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('20. CRLF + tab in notes → accepted (200)', async () => {
+    const res = await POST(makeReq(validBody({ notes: 'Line1\r\nLine2\twith tab' })));
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('21. NUL byte in notes → 422', async () => {
+    const res = await POST(makeReq(validBody({ notes: 'bad\u0000note' })));
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ error: 'validation_failed', field: 'notes' });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('22. newline in first_name (single-line field) → 422', async () => {
+    const res = await POST(makeReq(validBody({ first_name: 'Ja\nne' })));
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ error: 'validation_failed', field: 'first_name' });
+    expect(fetch).not.toHaveBeenCalled();
+  });
 });

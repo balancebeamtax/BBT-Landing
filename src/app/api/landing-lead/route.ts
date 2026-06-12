@@ -101,17 +101,23 @@ export async function POST(req: NextRequest): Promise<Response> {
   }
 
   // Garbage-pattern guard on free-text fields.
-  // NOTE: the URL test deliberately excludes `notes` — prospects legitimately
-  // paste their website into the notes box. Control-char and repeated-char
-  // tests apply to all four fields.
+  // - URL test excludes `notes` (prospects paste their website there).
+  // - Control-char policy is per input widget: `notes` is a <Textarea>, so
+  //   \t (09), \n (0A), \r (0D) are legitimate; single-line <input> fields
+  //   permit no control characters at all. Validating a multiline widget with
+  //   a single-line character class was the original P1 bug.
   const FREE_TEXT_FIELDS = ['first_name', 'last_name', 'business_name', 'notes'] as const;
   const URL_BLOCKED_FIELDS = new Set(['first_name', 'last_name', 'business_name']);
+  const MULTILINE_FIELDS = new Set(['notes']);
+  const CTRL_SINGLE_LINE = /[\x00-\x1F\x7F]/;                 // no control chars
+  const CTRL_MULTILINE = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/;  // allows \t \n \r
   for (const k of FREE_TEXT_FIELDS) {
     const v = (data as Record<string, unknown>)[k];
     if (typeof v === 'string' && v.length > 0) {
+      const ctrl = MULTILINE_FIELDS.has(k) ? CTRL_MULTILINE : CTRL_SINGLE_LINE;
       const garbage =
         /^(.)\1{3,}$/.test(v) ||
-        /[\x00-\x1F\x7F]/.test(v) ||
+        ctrl.test(v) ||
         (URL_BLOCKED_FIELDS.has(k) && /https?:\/\//i.test(v));
       if (garbage) {
         console.log('[landing-lead] garbage_pattern', { ip: redactIp(ip), field: k });
