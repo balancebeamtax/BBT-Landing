@@ -9,6 +9,8 @@ import {
   entityTypeOptions,
   deadlineSegmentOptions,
   bookkeepingSoftwareOptions,
+  roleOptions,
+  revenueRangeOptions,
   yesNoUnsureOptions,
   reconciledOptions,
   monthsBehindOptions,
@@ -60,9 +62,12 @@ export function ExtensionCleanupForm() {
   const [calendlyOpen, setCalendlyOpen] = React.useState(false);
   const [submittedValues, setSubmittedValues] =
     React.useState<ExtensionCleanupFormValues | null>(null);
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
 
-  const webhookUrl =
-    process.env.NEXT_PUBLIC_GHL_TEAM_EXTENSION_CLEANUP_WEBHOOK_URL || "";
+  // Anti-bot: timestamp at first render (fill-time check) + honeypot field ref.
+  const formRenderTimeRef = React.useRef<number>(Date.now());
+  const hpRef = React.useRef<HTMLInputElement>(null);
+
   const calendlyUrl =
     process.env.NEXT_PUBLIC_CALENDLY_URL_EXTENSION_CLEANUP || "";
 
@@ -85,6 +90,8 @@ export function ExtensionCleanupForm() {
       state: "",
       industry: "",
       bookkeeping_software: undefined,
+      role: undefined,
+      revenue_range: undefined,
       filed_extension: undefined,
       deadline_segment: undefined,
       extended_because_books: undefined,
@@ -116,12 +123,16 @@ export function ExtensionCleanupForm() {
 
   const onSubmit = async (values: ExtensionCleanupFormValues) => {
     setSubmitState("submitting");
+    setErrorMessage("");
 
     const payload = {
       ...values,
       form_origin: FUNNEL_ORIGIN,
-      page_url:
-        typeof window !== "undefined" ? window.location.href : "",
+      page_url: typeof window !== "undefined" ? window.location.href : "",
+      submitted_at: new Date().toISOString(),
+      business_factors: Array.isArray(values.business_factors)
+        ? values.business_factors.join(",")
+        : (values.business_factors ?? ""),
       utm_source: getUrlParam("utm_source"),
       utm_medium: getUrlParam("utm_medium"),
       utm_campaign: getUrlParam("utm_campaign"),
@@ -129,36 +140,57 @@ export function ExtensionCleanupForm() {
       utm_term: getUrlParam("utm_term"),
       gclid: getUrlParam("gclid"),
       fbclid: getUrlParam("fbclid"),
-      submitted_at: new Date().toISOString(),
-      business_factors: values.business_factors.join(","),
+      _hp: hpRef.current?.value ?? "",
+      _t: formRenderTimeRef.current,
     };
 
     try {
-      // GHL inbound webhooks accept JSON; fire-and-forget pattern.
-      const res = await fetch(webhookUrl, {
+      // Trailing slash required: next.config.mjs sets trailingSlash:true, so
+      // POSTing to "/api/landing-lead" 308-redirects to "/api/landing-lead/".
+      // Hit the canonical URL directly to avoid the redirect hop.
+      const res = await fetch("/api/landing-lead/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
-        mode: "no-cors",
       });
 
-      // no-cors fetch always resolves opaque; we treat resolution as success.
-      void res;
+      if (res.status === 200) {
+        track("generate_lead", {
+          funnel: FUNNEL_ORIGIN,
+          entity_type: values.entity_type,
+          deadline_segment: values.deadline_segment,
+        });
+        track("extension_cleanup_form_submit", { entity_type: values.entity_type });
+        setSubmittedValues(values);
+        setSubmitState("success");
+        setCalendlyOpen(true);
+        return;
+      }
 
-      track("generate_lead", {
-        funnel: FUNNEL_ORIGIN,
-        entity_type: values.entity_type,
-        deadline_segment: values.deadline_segment,
-      });
-      track("extension_cleanup_form_submit", {
-        entity_type: values.entity_type,
-      });
+      if (res.status === 429) {
+        setErrorMessage("Too many submissions, please wait a moment and try again.");
+        setSubmitState("error");
+        return;
+      }
 
-      setSubmittedValues(values);
-      setSubmitState("success");
-      setCalendlyOpen(true);
-    } catch (err) {
-      console.error("Form submit failed", err);
+      if (res.status === 422) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string; field?: string };
+        if (body.error === "disposable_email") {
+          setErrorMessage("Please use a business email address.");
+        } else if (body.error === "session_expired") {
+          formRenderTimeRef.current = Date.now() - 5000;
+          setErrorMessage("Your session timed out — please press submit again.");
+        } else {
+          setErrorMessage("Please check your information and try again.");
+        }
+        setSubmitState("error");
+        return;
+      }
+
+      setErrorMessage("Something went wrong. Please call us at 888-343-5908 and we will help directly.");
+      setSubmitState("error");
+    } catch {
+      setErrorMessage("Network error. Please try again or call 888-343-5908.");
       setSubmitState("error");
     }
   };
@@ -374,6 +406,56 @@ export function ExtensionCleanupForm() {
               )}
             />
             <FieldError message={errors.bookkeeping_software?.message} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="role">What&apos;s your role?</Label>
+              <Controller
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="role" aria-invalid={!!errors.role}>
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roleOptions.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <FieldError message={errors.role?.message} />
+            </div>
+            <div>
+              <Label htmlFor="revenue_range">Approx annual revenue?</Label>
+              <Controller
+                control={control}
+                name="revenue_range"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      id="revenue_range"
+                      aria-invalid={!!errors.revenue_range}
+                    >
+                      <SelectValue placeholder="Select annual revenue" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {revenueRangeOptions.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <FieldError message={errors.revenue_range?.message} />
+            </div>
           </div>
         </fieldset>
 
@@ -653,6 +735,30 @@ export function ExtensionCleanupForm() {
           <FieldError message={errors.consent_terms?.message} />
         </fieldset>
 
+        {/*
+          Honeypot: hidden from real users, harvested by bots. Named `fax_number`
+          (not website_url / address) so browser autofill never populates it — an
+          autofilled honeypot would silently drop a real lead. Value is mapped to
+          `_hp` in the POST payload.
+        */}
+        <input
+          ref={hpRef}
+          type="text"
+          name="fax_number"
+          defaultValue=""
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-10000px",
+            width: "1px",
+            height: "1px",
+            opacity: 0,
+            pointerEvents: "none",
+          }}
+        />
+
         <div className="space-y-3">
           <Button
             type="submit"
@@ -667,7 +773,8 @@ export function ExtensionCleanupForm() {
 
           {submitState === "error" && (
             <p role="alert" className="text-sm text-text-deadline">
-              Something went wrong sending your request. Try again, or email{" "}
+              {errorMessage || "Something went wrong sending your request."}{" "}
+              Try again, or email{" "}
               <a
                 href="mailto:dave.rios@balancebeamteam.com"
                 className="underline font-semibold"
