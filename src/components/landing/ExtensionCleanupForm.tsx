@@ -19,6 +19,7 @@ import {
   helpNeededOptions,
   biggestIssueOptions,
 } from "@/lib/schemas/extension-cleanup";
+import { usStateOptions } from "@/lib/us-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +37,48 @@ import { track, trackOnce } from "@/lib/analytics";
 import { CalendlyModal } from "./CalendlyModal";
 
 const FUNNEL_ORIGIN = "extension-cleanup-review";
+
+// ---- Multi-step wizard config (Spec 5) ------------------------------------
+
+type Step = 1 | 2 | 3 | 4 | 5;
+type FieldName = keyof ExtensionCleanupFormValues;
+
+const TOTAL_STEPS = 5;
+const STORAGE_KEY = "bbt-extension-cleanup-form-v1";
+
+// Required fields gated by the Next button before advancing. Optional fields
+// are omitted; the two conditional Step-3 fields are added dynamically when an
+// extension was filed (see handleNext), and the consent/superRefine checks run
+// at final submit.
+const STEP_VALIDATION_FIELDS: Record<Step, readonly FieldName[]> = {
+  1: ["first_name", "last_name", "email", "phone"],
+  2: ["entity_type", "state", "bookkeeping_software", "role", "revenue_range"],
+  3: ["filed_extension", "preparer_requested"],
+  4: ["reconciled_through_yearend", "months_behind", "accounts_to_review"],
+  5: ["help_needed", "biggest_issue", "consent_sms", "consent_terms"],
+};
+
+// Every field owned by each step — used to route a failed final submit back to
+// the earliest step that still has an error.
+const STEP_ALL_FIELDS: Record<Step, readonly FieldName[]> = {
+  1: ["first_name", "last_name", "email", "phone", "business_name", "business_website"],
+  2: ["entity_type", "state", "industry", "bookkeeping_software", "role", "revenue_range"],
+  3: ["filed_extension", "deadline_segment", "extended_because_books", "preparer_requested"],
+  4: ["reconciled_through_yearend", "months_behind", "accounts_to_review", "business_factors"],
+  5: ["help_needed", "biggest_issue", "biggest_issue_other", "notes", "consent_sms", "consent_marketing", "consent_terms"],
+};
+
+// Move focus to the first focusable control inside the now-visible step
+// container so keyboard/screen-reader users land in the new step on navigation.
+function focusFirstControl(container: HTMLElement | null) {
+  if (!container) return;
+  const el = container.querySelector<HTMLElement>(
+    'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  // preventScroll so the focus jump doesn't fight the smooth scrollIntoView
+  // that runs alongside it (see the focus-on-step-change effect).
+  el?.focus({ preventScroll: true });
+}
 
 function getUrlParam(key: string): string {
   if (typeof window === "undefined") return "";
@@ -77,6 +120,9 @@ export function ExtensionCleanupForm() {
     handleSubmit,
     formState: { errors },
     watch,
+    trigger,
+    getValues,
+    reset,
   } = useForm<ExtensionCleanupFormValues>({
     resolver: zodResolver(extensionCleanupFormSchema),
     defaultValues: {
@@ -87,14 +133,16 @@ export function ExtensionCleanupForm() {
       business_name: "",
       business_website: "",
       entity_type: undefined,
-      state: "",
+      state: undefined,
       industry: "",
       bookkeeping_software: undefined,
       role: undefined,
       revenue_range: undefined,
       filed_extension: undefined,
-      deadline_segment: undefined,
-      extended_because_books: undefined,
+      // null (not undefined) so the nullable schema validates them as absent
+      // when filed_extension === "no" hides them.
+      deadline_segment: null,
+      extended_because_books: null,
       preparer_requested: undefined,
       reconciled_through_yearend: undefined,
       months_behind: undefined,
@@ -102,6 +150,7 @@ export function ExtensionCleanupForm() {
       business_factors: [],
       help_needed: undefined,
       biggest_issue: undefined,
+      biggest_issue_other: "",
       notes: "",
       consent_sms: false,
       consent_marketing: false,
@@ -109,6 +158,142 @@ export function ExtensionCleanupForm() {
     },
     mode: "onBlur",
   });
+
+  // ---- Wizard step state (Spec 5) -----------------------------------------
+  const [currentStep, setCurrentStep] = React.useState<Step>(1);
+  // Points at the currently-mounted step container (only one renders at a time),
+  // used to move focus into the new step on navigation.
+  const stepContainerRef = React.useRef<HTMLDivElement>(null);
+  // Set just before a navigation so the focus effect moves focus into the new
+  // step — but NOT on the initial mount or sessionStorage restore.
+  const shouldFocusStepRef = React.useRef(false);
+  // Mirrors currentStep so the debounced value-persist subscription always
+  // saves the latest step without re-subscribing on every step change.
+  const currentStepRef = React.useRef<Step>(currentStep);
+  React.useEffect(() => {
+    currentStepRef.current = currentStep;
+  }, [currentStep]);
+
+  // Persist form values + step to sessionStorage. The form `values` do NOT
+  // contain the freshness-tied anti-bot fields (_hp is an unregistered DOM
+  // input; _t is a render-time ref; the turnstile token is added at submit),
+  // so nothing freshness-bound is stored and _t naturally regenerates on every
+  // remount — satisfying the Spec 5 security note without an explicit strip.
+  const persistState = React.useCallback(
+    (values: Partial<ExtensionCleanupFormValues>, step: Step) => {
+      if (typeof window === "undefined") return;
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ values, step }));
+      } catch {
+        /* sessionStorage may throw in privacy mode / quota — ignore */
+      }
+    },
+    []
+  );
+
+  // Restore on mount.
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        values?: Partial<ExtensionCleanupFormValues>;
+        step?: number;
+      };
+      if (saved.values) reset(saved.values);
+      if (saved.step && saved.step >= 1 && saved.step <= TOTAL_STEPS) {
+        setCurrentStep(saved.step as Step);
+      }
+    } catch {
+      /* corrupt payload — ignore and start fresh */
+    }
+  }, [reset]);
+
+  // Persist on change (debounced 500ms).
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    let timer: number | undefined;
+    const subscription = watch((values) => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        persistState(values as ExtensionCleanupFormValues, currentStepRef.current);
+      }, 500);
+    });
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      subscription.unsubscribe();
+    };
+  }, [watch, persistState]);
+
+  // Move focus into the new step (its first control) and scroll that step into
+  // view after an explicit navigation. Runs once the new step container has
+  // mounted, so both stay in sync for Next, Back, popstate, and onInvalid.
+  React.useEffect(() => {
+    if (shouldFocusStepRef.current) {
+      shouldFocusStepRef.current = false;
+      focusFirstControl(stepContainerRef.current);
+      stepContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [currentStep]);
+
+  // Browser back/forward — popstate is the single source that applies history
+  // step changes (covers both the browser buttons and the in-form Back, which
+  // delegates to history.back()).
+  React.useEffect(() => {
+    function onPopState(e: PopStateEvent) {
+      const step = (e.state as { step?: number } | null)?.step;
+      const next: Step = step && step >= 1 && step <= TOTAL_STEPS ? (step as Step) : 1;
+      shouldFocusStepRef.current = true;
+      setCurrentStep(next);
+      persistState(getValues(), next);
+      // Scroll + focus are handled by the focus-on-step-change effect.
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [getValues, persistState]);
+
+  async function handleNext() {
+    const fields: FieldName[] = [...STEP_VALIDATION_FIELDS[currentStep]];
+    if (currentStep === 3 && watch("filed_extension") !== "no") {
+      fields.push("deadline_segment", "extended_because_books");
+    }
+    const valid = await trigger(fields);
+    if (!valid) return;
+
+    const next = Math.min(TOTAL_STEPS, currentStep + 1) as Step;
+    track("form_step_advance", { step: currentStep, next });
+    shouldFocusStepRef.current = true;
+    setCurrentStep(next);
+    persistState(getValues(), next);
+    if (typeof window !== "undefined") {
+      window.history.pushState({ step: next }, "", `#step-${next}`);
+    }
+    // Scroll + focus are handled by the focus-on-step-change effect.
+  }
+
+  function handleBack() {
+    if (currentStep <= 1) return;
+    track("form_step_back", { from: currentStep, to: currentStep - 1 });
+    // Delegate to history so the in-form Back and the browser Back stay in
+    // sync; the popstate handler applies the step change, scroll, and focus.
+    if (typeof window !== "undefined") window.history.back();
+  }
+
+  // If a final submit fails validation (e.g. a restored session with an
+  // incomplete earlier step), route the user to the earliest step with an error
+  // instead of failing silently on a hidden field.
+  const onInvalid = (formErrors: Record<string, unknown>) => {
+    const erroredFields = Object.keys(formErrors);
+    for (const step of [1, 2, 3, 4, 5] as Step[]) {
+      if (STEP_ALL_FIELDS[step].some((f) => erroredFields.includes(f))) {
+        shouldFocusStepRef.current = true;
+        setCurrentStep(step);
+        // Scroll + focus are handled by the focus-on-step-change effect.
+        return;
+      }
+    }
+  };
 
   // Fire form_start once on first user interaction.
   const onAnyFocus = React.useCallback(() => {
@@ -133,6 +318,14 @@ export function ExtensionCleanupForm() {
       business_factors: Array.isArray(values.business_factors)
         ? values.business_factors.join(",")
         : (values.business_factors ?? ""),
+      // Only forward the free-text when "Other" is the selected issue.
+      biggest_issue_other:
+        values.biggest_issue === "other" ? (values.biggest_issue_other ?? "") : "",
+      // When no extension was filed, the follow-ups are hidden — send null.
+      deadline_segment:
+        values.filed_extension === "no" ? null : values.deadline_segment,
+      extended_because_books:
+        values.filed_extension === "no" ? null : values.extended_because_books,
       utm_source: getUrlParam("utm_source"),
       utm_medium: getUrlParam("utm_medium"),
       utm_campaign: getUrlParam("utm_campaign"),
@@ -158,9 +351,16 @@ export function ExtensionCleanupForm() {
         track("generate_lead", {
           funnel: FUNNEL_ORIGIN,
           entity_type: values.entity_type,
-          deadline_segment: values.deadline_segment,
+          deadline_segment: values.deadline_segment ?? undefined,
         });
         track("extension_cleanup_form_submit", { entity_type: values.entity_type });
+        if (typeof window !== "undefined") {
+          try {
+            sessionStorage.removeItem(STORAGE_KEY);
+          } catch {
+            /* ignore */
+          }
+        }
         setSubmittedValues(values);
         setSubmitState("success");
         setCalendlyOpen(true);
@@ -255,17 +455,14 @@ export function ExtensionCleanupForm() {
   return (
     <>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
         onFocus={onAnyFocus}
         noValidate
         className="space-y-8"
       >
-        {/* Contact information */}
-        <fieldset className="space-y-4">
-          <legend className="font-serif text-xl font-semibold mb-3">
-            Contact information
-          </legend>
-
+        {/* Step 1 — Contact information */}
+        {currentStep === 1 && (
+        <div ref={stepContainerRef} role="group" aria-label="Contact information" className="scroll-mt-24 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="first_name">First name</Label>
@@ -340,14 +537,12 @@ export function ExtensionCleanupForm() {
               />
             </div>
           </div>
-        </fieldset>
+        </div>
+        )}
 
-        {/* Business details */}
-        <fieldset className="space-y-4">
-          <legend className="font-serif text-xl font-semibold mb-3">
-            Business details
-          </legend>
-
+        {/* Step 2 — Business details */}
+        {currentStep === 2 && (
+        <div ref={stepContainerRef} role="group" aria-label="Business details" className="scroll-mt-24 space-y-4">
           <div>
             <Label htmlFor="entity_type">Entity type</Label>
             <Controller
@@ -374,12 +569,23 @@ export function ExtensionCleanupForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="state">State</Label>
-              <Input
-                id="state"
-                autoComplete="address-level1"
-                placeholder="e.g. California"
-                aria-invalid={!!errors.state}
-                {...register("state")}
+              <Controller
+                control={control}
+                name="state"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="state" aria-invalid={!!errors.state}>
+                      <SelectValue placeholder="Select your state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {usStateOptions.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               />
               <FieldError message={errors.state?.message} />
             </div>
@@ -467,14 +673,12 @@ export function ExtensionCleanupForm() {
               <FieldError message={errors.revenue_range?.message} />
             </div>
           </div>
-        </fieldset>
+        </div>
+        )}
 
-        {/* Extension status */}
-        <fieldset className="space-y-4">
-          <legend className="font-serif text-xl font-semibold mb-3">
-            Extension and tax-prep status
-          </legend>
-
+        {/* Step 3 — Extension and tax-prep status */}
+        {currentStep === 3 && (
+        <div ref={stepContainerRef} role="group" aria-label="Extension and tax-prep status" className="scroll-mt-24 space-y-4">
           <RadioField
             name="filed_extension"
             label="Did you file a federal extension for the 2025 tax return?"
@@ -483,26 +687,33 @@ export function ExtensionCleanupForm() {
             error={errors.filed_extension?.message}
           />
 
-          <RadioField
-            name="deadline_segment"
-            label="Which deadline are you working toward?"
-            options={deadlineSegmentOptions}
-            control={control}
-            error={errors.deadline_segment?.message}
-          />
+          {/* Hidden when no extension was filed (Spec 3). shouldUnregister
+              stays false (rhf default), so toggling no -> yes restores prior
+              answers; payload coerces these to null while "no" is selected. */}
+          {watch("filed_extension") !== "no" && (
+            <>
+              <RadioField
+                name="deadline_segment"
+                label="Which deadline are you working toward?"
+                options={deadlineSegmentOptions}
+                control={control}
+                error={errors.deadline_segment?.message}
+              />
 
-          <RadioField
-            name="extended_because_books"
-            label="Did you extend because the books were not ready?"
-            options={[
-              { value: "yes", label: "Yes" },
-              { value: "partly", label: "Partly" },
-              { value: "no", label: "No" },
-              { value: "unsure", label: "Not sure" },
-            ]}
-            control={control}
-            error={errors.extended_because_books?.message}
-          />
+              <RadioField
+                name="extended_because_books"
+                label="Did you extend because the books were not ready?"
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "partly", label: "Partly" },
+                  { value: "no", label: "No" },
+                  { value: "unsure", label: "Not sure" },
+                ]}
+                control={control}
+                error={errors.extended_because_books?.message}
+              />
+            </>
+          )}
 
           <RadioField
             name="preparer_requested"
@@ -515,14 +726,12 @@ export function ExtensionCleanupForm() {
             control={control}
             error={errors.preparer_requested?.message}
           />
-        </fieldset>
+        </div>
+        )}
 
-        {/* Bookkeeping status */}
-        <fieldset className="space-y-4">
-          <legend className="font-serif text-xl font-semibold mb-3">
-            Bookkeeping status
-          </legend>
-
+        {/* Step 4 — Bookkeeping status */}
+        {currentStep === 4 && (
+        <div ref={stepContainerRef} role="group" aria-label="Bookkeeping status" className="scroll-mt-24 space-y-4">
           <RadioField
             name="reconciled_through_yearend"
             label="Are your 2025 books reconciled through year-end?"
@@ -615,14 +824,13 @@ export function ExtensionCleanupForm() {
               )}
             />
           </fieldset>
-        </fieldset>
+        </div>
+        )}
 
-        {/* What help do you need */}
-        <fieldset className="space-y-4">
-          <legend className="font-serif text-xl font-semibold mb-3">
-            What help do you need?
-          </legend>
-
+        {/* Step 5 — What help do you need? + consent + submit */}
+        {currentStep === 5 && (
+        <div ref={stepContainerRef} role="group" aria-label="What help do you need?" className="scroll-mt-24 space-y-6">
+          <div className="space-y-4">
           <div>
             <Label htmlFor="help_needed">What are you looking for?</Label>
             <Controller
@@ -669,6 +877,21 @@ export function ExtensionCleanupForm() {
               )}
             />
             <FieldError message={errors.biggest_issue?.message} />
+
+            {watch("biggest_issue") === "other" && (
+              <div className="mt-3">
+                <Label htmlFor="biggest_issue_other">
+                  Tell us more{" "}
+                  <span className="font-normal text-text-muted">(optional)</span>
+                </Label>
+                <Input
+                  id="biggest_issue_other"
+                  aria-invalid={!!errors.biggest_issue_other}
+                  {...register("biggest_issue_other")}
+                />
+                <FieldError message={errors.biggest_issue_other?.message} />
+              </div>
+            )}
           </div>
 
           <div>
@@ -678,10 +901,10 @@ export function ExtensionCleanupForm() {
             </Label>
             <Textarea id="notes" rows={4} {...register("notes")} />
           </div>
-        </fieldset>
+          </div>
 
-        {/* Consent */}
-        <fieldset className="space-y-3 rounded-lg border border-border bg-surface-alt p-4">
+          {/* Consent */}
+          <fieldset className="space-y-3 rounded-lg border border-border bg-surface-alt p-4">
           <legend className="sr-only">Consent and submission</legend>
 
           <Controller
@@ -743,7 +966,9 @@ export function ExtensionCleanupForm() {
             )}
           />
           <FieldError message={errors.consent_terms?.message} />
-        </fieldset>
+          </fieldset>
+        </div>
+        )}
 
         {/*
           Honeypot: hidden from real users, harvested by bots. Named `fax_number`
@@ -770,16 +995,36 @@ export function ExtensionCleanupForm() {
         />
 
         <div className="space-y-3">
-          <Button
-            type="submit"
-            size="lg"
-            disabled={submitState === "submitting"}
-            className="w-full sm:w-auto"
-          >
-            {submitState === "submitting"
-              ? "Sending…"
-              : "Request my cleanup review"}
-          </Button>
+          <div className="flex items-center justify-between gap-3">
+            {currentStep > 1 ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                onClick={handleBack}
+              >
+                ← Back
+              </Button>
+            ) : (
+              <span aria-hidden="true" />
+            )}
+
+            {currentStep < TOTAL_STEPS ? (
+              <Button type="button" size="lg" onClick={handleNext}>
+                Next →
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                size="lg"
+                disabled={submitState === "submitting"}
+              >
+                {submitState === "submitting"
+                  ? "Sending…"
+                  : "Request my cleanup review"}
+              </Button>
+            )}
+          </div>
 
           {submitState === "error" && (
             <p role="alert" className="text-sm text-text-deadline">
@@ -826,7 +1071,7 @@ function RadioField({
         render={({ field }) => (
           <RadioGroup
             onValueChange={field.onChange}
-            value={field.value as string}
+            value={(field.value ?? undefined) as string | undefined}
             className="grid grid-cols-1 sm:grid-cols-2 gap-2"
           >
             {options.map((o) => (

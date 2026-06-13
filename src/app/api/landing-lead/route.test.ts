@@ -38,7 +38,7 @@ function validBody(overrides: Record<string, unknown> = {}): Record<string, unkn
     email: 'jane@example.com',
     phone: '555-555-5555',
     entity_type: 's_corp',
-    state: 'California',
+    state: 'CA',
     bookkeeping_software: 'qbo',
     role: 'owner',
     revenue_range: '100k_500k',
@@ -50,7 +50,7 @@ function validBody(overrides: Record<string, unknown> = {}): Record<string, unkn
     months_behind: '1_3',
     accounts_to_review: '3_5',
     help_needed: 'cleanup_before_prep',
-    biggest_issue: 'behind',
+    biggest_issue: 'dont_know_where_to_begin',
     consent_sms: true,
     consent_terms: true,
     form_origin: 'extension-cleanup-review',
@@ -267,5 +267,46 @@ describe('POST /api/landing-lead', () => {
     expect(res.status).toBe(422);
     expect(await res.json()).toMatchObject({ error: 'validation_failed', field: 'first_name' });
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  // ---- IMP-231 schema changes -------------------------------------------
+
+  it('23. filed_extension="no" with null follow-ups → 200 (conditional fields not required)', async () => {
+    const res = await POST(
+      makeReq(
+        validBody({
+          filed_extension: 'no',
+          deadline_segment: null,
+          extended_because_books: null,
+        })
+      )
+    );
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('24. filed_extension="yes" with deadline_segment=null → 422 field deadline_segment', async () => {
+    const res = await POST(makeReq(validBody({ filed_extension: 'yes', deadline_segment: null })));
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({
+      error: 'validation_failed',
+      field: 'deadline_segment',
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('25. new enum values (excel_or_sheets, biggest_issue=other + free-text) → 200', async () => {
+    const res = await POST(
+      makeReq(
+        validBody({
+          state: 'TX',
+          bookkeeping_software: 'excel_or_sheets',
+          biggest_issue: 'other',
+          biggest_issue_other: 'Our prior firm ghosted us mid-year.',
+        })
+      )
+    );
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

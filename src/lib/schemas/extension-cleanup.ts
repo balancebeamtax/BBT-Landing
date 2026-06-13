@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { usStateOptions } from "@/lib/us-states";
 
 // Zod schema for the /extension-cleanup-review intake form.
 // Field names match the GHL workflow build spec (Section A.1 payload contract).
@@ -22,7 +23,7 @@ export const bookkeepingSoftwareOptions = [
   { value: "qbo", label: "QuickBooks Online" },
   { value: "qb_desktop", label: "QuickBooks Desktop" },
   { value: "xero", label: "Xero" },
-  { value: "spreadsheet", label: "Spreadsheet" },
+  { value: "excel_or_sheets", label: "Excel or Google Sheets" },
   { value: "none", label: "No system" },
   { value: "unsure", label: "Not sure" },
 ] as const;
@@ -76,12 +77,10 @@ export const helpNeededOptions = [
 ] as const;
 
 export const biggestIssueOptions = [
-  { value: "behind", label: "Books are behind" },
-  { value: "unreconciled", label: "Accounts are not reconciled" },
-  { value: "missing_docs", label: "Missing documents or statements" },
-  { value: "qb_messy", label: "QuickBooks is messy" },
-  { value: "prior_bk_issue", label: "Prior bookkeeper issue" },
-  { value: "unknown", label: "I do not know what is wrong" },
+  { value: "no_trusted_bookkeeper", label: "I haven't found a bookkeeper I can trust" },
+  { value: "no_money_to_start", label: "I don't have the money to begin" },
+  { value: "previous_bookkeeper_withholding", label: "My other bookkeeper is holding on to necessary information" },
+  { value: "dont_know_where_to_begin", label: "I have no idea where to begin" },
   { value: "other", label: "Other" },
 ] as const;
 
@@ -105,7 +104,12 @@ export const revenueRangeOptions = [
 // Phone: accept loose formatting; we strip to digits server-side.
 const phoneRegex = /^[\d\s\-\+\(\)\.]{7,20}$/;
 
-export const extensionCleanupFormSchema = z.object({
+// Base object schema. Kept internal and separate from the exported client
+// schema because the conditional-required rule is added via `.superRefine()`,
+// which yields a ZodEffects — and ZodEffects has no `.extend()`/`.strict()`.
+// serverPayloadSchema therefore extends THIS object, then applies the same
+// refinement, so both client and server enforce identical conditional logic.
+const extensionCleanupFormObject = z.object({
   // Contact
   first_name: z.string().min(1, "First name is required").max(50),
   last_name: z.string().min(1, "Last name is required").max(50),
@@ -118,7 +122,9 @@ export const extensionCleanupFormSchema = z.object({
   entity_type: z.enum(entityTypeOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select your entity type" }),
   }),
-  state: z.string().min(2, "State is required").max(50),
+  state: z.enum(usStateOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select your state" }),
+  }),
   industry: z.string().max(80).optional().or(z.literal("")),
   bookkeeping_software: z.enum(
     bookkeepingSoftwareOptions.map((o) => o.value) as [string, ...string[]],
@@ -136,13 +142,18 @@ export const extensionCleanupFormSchema = z.object({
   filed_extension: z.enum(yesNoUnsureOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select whether you filed an extension" }),
   }),
-  deadline_segment: z.enum(
-    deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]],
-    { errorMap: () => ({ message: "Select the deadline that applies to you" }) }
-  ),
-  extended_because_books: z.enum(["yes", "partly", "no", "unsure"], {
-    errorMap: () => ({ message: "Tell us whether the books drove the extension" }),
-  }),
+  // Conditional on filed_extension !== "no". Nullable so they can submit as
+  // null when hidden; conditional-required is enforced by applyConditionalRules.
+  deadline_segment: z
+    .enum(deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]], {
+      errorMap: () => ({ message: "Select the deadline that applies to you" }),
+    })
+    .nullable(),
+  extended_because_books: z
+    .enum(["yes", "partly", "no", "unsure"], {
+      errorMap: () => ({ message: "Tell us whether the books drove the extension" }),
+    })
+    .nullable(),
   preparer_requested: z.enum(["yes", "no", "not_yet"], {
     errorMap: () => ({ message: "Tell us if your preparer has asked for reports" }),
   }),
@@ -170,6 +181,9 @@ export const extensionCleanupFormSchema = z.object({
   biggest_issue: z.enum(biggestIssueOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select the biggest issue holding up filing" }),
   }),
+  // Optional free text revealed when biggest_issue === "other". Not required
+  // even when "other" is selected (see Spec 4). Submits as "" otherwise.
+  biggest_issue_other: z.string().max(500).optional().or(z.literal("")),
   notes: z.string().max(2000).optional().or(z.literal("")),
 
   // Consent (TCPA + marketing)
@@ -182,15 +196,52 @@ export const extensionCleanupFormSchema = z.object({
   }),
 });
 
+// Conditional-required rule shared by the client and server schemas: when an
+// extension was filed (or might have been), both follow-up answers are
+// required; when filed_extension === "no" they are hidden and submit as null.
+// Typed structurally so it applies to both the base output and the wider
+// server payload output.
+function applyConditionalRules(
+  data: {
+    filed_extension: string;
+    deadline_segment: string | null;
+    extended_because_books: string | null;
+  },
+  ctx: z.RefinementCtx
+) {
+  if (data.filed_extension !== "no") {
+    if (!data.deadline_segment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["deadline_segment"],
+        message: "Select the deadline that applies to you",
+      });
+    }
+    if (!data.extended_because_books) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["extended_because_books"],
+        message: "Tell us whether the books drove the extension",
+      });
+    }
+  }
+}
+
+export const extensionCleanupFormSchema =
+  extensionCleanupFormObject.superRefine(applyConditionalRules);
+
 export type ExtensionCleanupFormValues = z.infer<typeof extensionCleanupFormSchema>;
 
 // Server-side payload contract for POST /api/landing-lead.
-// Built from the plain client ZodObject (no ZodEffects wrapper), extended with
-// transport metadata, marketing attribution, and anti-bot fields. `.strict()`
-// rejects any key not declared here. `business_factors` arrives as a
+// Built from the plain base ZodObject (so `.extend()`/`.strict()` are available),
+// extended with transport metadata, marketing attribution, and anti-bot fields.
+// `.strict()` rejects any key not declared here. `business_factors` arrives as a
 // comma-joined string on the wire (the form joins the multi-select before POST),
-// so the array field from the client schema is overridden to a string.
-export const serverPayloadSchema = extensionCleanupFormSchema
+// so the array field from the base schema is overridden to a string. The same
+// conditional-required refinement as the client schema is applied last, so a
+// hand-crafted POST with filed_extension !== "no" and a null follow-up is
+// rejected server-side too.
+export const serverPayloadSchema = extensionCleanupFormObject
   .extend({
     form_origin: z.literal("extension-cleanup-review"),
     page_url: z.string().url().max(2048),
@@ -207,6 +258,7 @@ export const serverPayloadSchema = extensionCleanupFormSchema
     _t: z.number().int().positive(),
     _turnstile_token: z.string().max(2000).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine(applyConditionalRules);
 
 export type ServerPayload = z.infer<typeof serverPayloadSchema>;
