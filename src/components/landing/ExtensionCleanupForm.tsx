@@ -233,7 +233,7 @@ export function ExtensionCleanupForm() {
     if (shouldFocusStepRef.current) {
       shouldFocusStepRef.current = false;
       focusFirstControl(stepContainerRef.current);
-      stepContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      stepContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [currentStep]);
 
