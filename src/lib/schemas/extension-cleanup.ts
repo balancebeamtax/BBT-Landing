@@ -104,7 +104,12 @@ export const revenueRangeOptions = [
 // Phone: accept loose formatting; we strip to digits server-side.
 const phoneRegex = /^[\d\s\-\+\(\)\.]{7,20}$/;
 
-export const extensionCleanupFormSchema = z.object({
+// Base object schema. Kept internal and separate from the exported client
+// schema because the conditional-required rule is added via `.superRefine()`,
+// which yields a ZodEffects — and ZodEffects has no `.extend()`/`.strict()`.
+// serverPayloadSchema therefore extends THIS object, then applies the same
+// refinement, so both client and server enforce identical conditional logic.
+const extensionCleanupFormObject = z.object({
   // Contact
   first_name: z.string().min(1, "First name is required").max(50),
   last_name: z.string().min(1, "Last name is required").max(50),
@@ -137,13 +142,18 @@ export const extensionCleanupFormSchema = z.object({
   filed_extension: z.enum(yesNoUnsureOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select whether you filed an extension" }),
   }),
-  deadline_segment: z.enum(
-    deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]],
-    { errorMap: () => ({ message: "Select the deadline that applies to you" }) }
-  ),
-  extended_because_books: z.enum(["yes", "partly", "no", "unsure"], {
-    errorMap: () => ({ message: "Tell us whether the books drove the extension" }),
-  }),
+  // Conditional on filed_extension !== "no". Nullable so they can submit as
+  // null when hidden; conditional-required is enforced by applyConditionalRules.
+  deadline_segment: z
+    .enum(deadlineSegmentOptions.map((o) => o.value) as [string, ...string[]], {
+      errorMap: () => ({ message: "Select the deadline that applies to you" }),
+    })
+    .nullable(),
+  extended_because_books: z
+    .enum(["yes", "partly", "no", "unsure"], {
+      errorMap: () => ({ message: "Tell us whether the books drove the extension" }),
+    })
+    .nullable(),
   preparer_requested: z.enum(["yes", "no", "not_yet"], {
     errorMap: () => ({ message: "Tell us if your preparer has asked for reports" }),
   }),
@@ -186,15 +196,52 @@ export const extensionCleanupFormSchema = z.object({
   }),
 });
 
+// Conditional-required rule shared by the client and server schemas: when an
+// extension was filed (or might have been), both follow-up answers are
+// required; when filed_extension === "no" they are hidden and submit as null.
+// Typed structurally so it applies to both the base output and the wider
+// server payload output.
+function applyConditionalRules(
+  data: {
+    filed_extension: string;
+    deadline_segment: string | null;
+    extended_because_books: string | null;
+  },
+  ctx: z.RefinementCtx
+) {
+  if (data.filed_extension !== "no") {
+    if (!data.deadline_segment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["deadline_segment"],
+        message: "Select the deadline that applies to you",
+      });
+    }
+    if (!data.extended_because_books) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["extended_because_books"],
+        message: "Tell us whether the books drove the extension",
+      });
+    }
+  }
+}
+
+export const extensionCleanupFormSchema =
+  extensionCleanupFormObject.superRefine(applyConditionalRules);
+
 export type ExtensionCleanupFormValues = z.infer<typeof extensionCleanupFormSchema>;
 
 // Server-side payload contract for POST /api/landing-lead.
-// Built from the plain client ZodObject (no ZodEffects wrapper), extended with
-// transport metadata, marketing attribution, and anti-bot fields. `.strict()`
-// rejects any key not declared here. `business_factors` arrives as a
+// Built from the plain base ZodObject (so `.extend()`/`.strict()` are available),
+// extended with transport metadata, marketing attribution, and anti-bot fields.
+// `.strict()` rejects any key not declared here. `business_factors` arrives as a
 // comma-joined string on the wire (the form joins the multi-select before POST),
-// so the array field from the client schema is overridden to a string.
-export const serverPayloadSchema = extensionCleanupFormSchema
+// so the array field from the base schema is overridden to a string. The same
+// conditional-required refinement as the client schema is applied last, so a
+// hand-crafted POST with filed_extension !== "no" and a null follow-up is
+// rejected server-side too.
+export const serverPayloadSchema = extensionCleanupFormObject
   .extend({
     form_origin: z.literal("extension-cleanup-review"),
     page_url: z.string().url().max(2048),
@@ -211,6 +258,7 @@ export const serverPayloadSchema = extensionCleanupFormSchema
     _t: z.number().int().positive(),
     _turnstile_token: z.string().max(2000).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine(applyConditionalRules);
 
 export type ServerPayload = z.infer<typeof serverPayloadSchema>;

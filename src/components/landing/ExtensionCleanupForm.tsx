@@ -94,8 +94,10 @@ export function ExtensionCleanupForm() {
       role: undefined,
       revenue_range: undefined,
       filed_extension: undefined,
-      deadline_segment: undefined,
-      extended_because_books: undefined,
+      // null (not undefined) so the nullable schema validates them as absent
+      // when filed_extension === "no" hides them.
+      deadline_segment: null,
+      extended_because_books: null,
       preparer_requested: undefined,
       reconciled_through_yearend: undefined,
       months_behind: undefined,
@@ -138,6 +140,11 @@ export function ExtensionCleanupForm() {
       // Only forward the free-text when "Other" is the selected issue.
       biggest_issue_other:
         values.biggest_issue === "other" ? (values.biggest_issue_other ?? "") : "",
+      // When no extension was filed, the follow-ups are hidden — send null.
+      deadline_segment:
+        values.filed_extension === "no" ? null : values.deadline_segment,
+      extended_because_books:
+        values.filed_extension === "no" ? null : values.extended_because_books,
       utm_source: getUrlParam("utm_source"),
       utm_medium: getUrlParam("utm_medium"),
       utm_campaign: getUrlParam("utm_campaign"),
@@ -163,7 +170,7 @@ export function ExtensionCleanupForm() {
         track("generate_lead", {
           funnel: FUNNEL_ORIGIN,
           entity_type: values.entity_type,
-          deadline_segment: values.deadline_segment,
+          deadline_segment: values.deadline_segment ?? undefined,
         });
         track("extension_cleanup_form_submit", { entity_type: values.entity_type });
         setSubmittedValues(values);
@@ -499,26 +506,33 @@ export function ExtensionCleanupForm() {
             error={errors.filed_extension?.message}
           />
 
-          <RadioField
-            name="deadline_segment"
-            label="Which deadline are you working toward?"
-            options={deadlineSegmentOptions}
-            control={control}
-            error={errors.deadline_segment?.message}
-          />
+          {/* Hidden when no extension was filed (Spec 3). shouldUnregister
+              stays false (rhf default), so toggling no -> yes restores prior
+              answers; payload coerces these to null while "no" is selected. */}
+          {watch("filed_extension") !== "no" && (
+            <>
+              <RadioField
+                name="deadline_segment"
+                label="Which deadline are you working toward?"
+                options={deadlineSegmentOptions}
+                control={control}
+                error={errors.deadline_segment?.message}
+              />
 
-          <RadioField
-            name="extended_because_books"
-            label="Did you extend because the books were not ready?"
-            options={[
-              { value: "yes", label: "Yes" },
-              { value: "partly", label: "Partly" },
-              { value: "no", label: "No" },
-              { value: "unsure", label: "Not sure" },
-            ]}
-            control={control}
-            error={errors.extended_because_books?.message}
-          />
+              <RadioField
+                name="extended_because_books"
+                label="Did you extend because the books were not ready?"
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "partly", label: "Partly" },
+                  { value: "no", label: "No" },
+                  { value: "unsure", label: "Not sure" },
+                ]}
+                control={control}
+                error={errors.extended_because_books?.message}
+              />
+            </>
+          )}
 
           <RadioField
             name="preparer_requested"
@@ -857,7 +871,7 @@ function RadioField({
         render={({ field }) => (
           <RadioGroup
             onValueChange={field.onChange}
-            value={field.value as string}
+            value={(field.value ?? undefined) as string | undefined}
             className="grid grid-cols-1 sm:grid-cols-2 gap-2"
           >
             {options.map((o) => (
