@@ -50,7 +50,7 @@ function validBody(overrides: Record<string, unknown> = {}): Record<string, unkn
     months_behind: '1_3',
     accounts_to_review: '3_5',
     help_needed: 'cleanup_before_prep',
-    biggest_issue: 'behind',
+    biggest_issue: 'dont_know_where_to_begin',
     consent_sms: true,
     consent_terms: true,
     form_origin: 'extension-cleanup-review',

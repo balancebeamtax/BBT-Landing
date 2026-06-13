@@ -77,12 +77,10 @@ export const helpNeededOptions = [
 ] as const;
 
 export const biggestIssueOptions = [
-  { value: "behind", label: "Books are behind" },
-  { value: "unreconciled", label: "Accounts are not reconciled" },
-  { value: "missing_docs", label: "Missing documents or statements" },
-  { value: "qb_messy", label: "QuickBooks is messy" },
-  { value: "prior_bk_issue", label: "Prior bookkeeper issue" },
-  { value: "unknown", label: "I do not know what is wrong" },
+  { value: "no_trusted_bookkeeper", label: "I haven't found a bookkeeper I can trust" },
+  { value: "no_money_to_start", label: "I don't have the money to begin" },
+  { value: "previous_bookkeeper_withholding", label: "My other bookkeeper is holding on to necessary information" },
+  { value: "dont_know_where_to_begin", label: "I have no idea where to begin" },
   { value: "other", label: "Other" },
 ] as const;
 
@@ -173,6 +171,9 @@ export const extensionCleanupFormSchema = z.object({
   biggest_issue: z.enum(biggestIssueOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select the biggest issue holding up filing" }),
   }),
+  // Optional free text revealed when biggest_issue === "other". Not required
+  // even when "other" is selected (see Spec 4). Submits as "" otherwise.
+  biggest_issue_other: z.string().max(500).optional().or(z.literal("")),
   notes: z.string().max(2000).optional().or(z.literal("")),
 
   // Consent (TCPA + marketing)

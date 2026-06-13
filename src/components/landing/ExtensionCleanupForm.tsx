@@ -103,6 +103,7 @@ export function ExtensionCleanupForm() {
       business_factors: [],
       help_needed: undefined,
       biggest_issue: undefined,
+      biggest_issue_other: "",
       notes: "",
       consent_sms: false,
       consent_marketing: false,
@@ -134,6 +135,9 @@ export function ExtensionCleanupForm() {
       business_factors: Array.isArray(values.business_factors)
         ? values.business_factors.join(",")
         : (values.business_factors ?? ""),
+      // Only forward the free-text when "Other" is the selected issue.
+      biggest_issue_other:
+        values.biggest_issue === "other" ? (values.biggest_issue_other ?? "") : "",
       utm_source: getUrlParam("utm_source"),
       utm_medium: getUrlParam("utm_medium"),
       utm_campaign: getUrlParam("utm_campaign"),
@@ -681,6 +685,21 @@ export function ExtensionCleanupForm() {
               )}
             />
             <FieldError message={errors.biggest_issue?.message} />
+
+            {watch("biggest_issue") === "other" && (
+              <div className="mt-3">
+                <Label htmlFor="biggest_issue_other">
+                  Tell us more{" "}
+                  <span className="font-normal text-text-muted">(optional)</span>
+                </Label>
+                <Input
+                  id="biggest_issue_other"
+                  aria-invalid={!!errors.biggest_issue_other}
+                  {...register("biggest_issue_other")}
+                />
+                <FieldError message={errors.biggest_issue_other?.message} />
+              </div>
+            )}
           </div>
 
           <div>
