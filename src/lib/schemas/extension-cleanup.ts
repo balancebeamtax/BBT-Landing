@@ -85,6 +85,23 @@ export const biggestIssueOptions = [
   { value: "other", label: "Other" },
 ] as const;
 
+export const roleOptions = [
+  { value: "owner", label: "Owner" },
+  { value: "cfo_controller", label: "CFO or Controller" },
+  { value: "bookkeeper", label: "Internal bookkeeper" },
+  { value: "office_manager", label: "Office manager" },
+  { value: "other", label: "Other" },
+] as const;
+
+export const revenueRangeOptions = [
+  { value: "under_100k", label: "Under $100K" },
+  { value: "100k_500k", label: "$100K–$500K" },
+  { value: "500k_1m", label: "$500K–$1M" },
+  { value: "1m_5m", label: "$1M–$5M" },
+  { value: "over_5m", label: "Over $5M" },
+  { value: "prefer_not_say", label: "Prefer not to say" },
+] as const;
+
 // Phone: accept loose formatting; we strip to digits server-side.
 const phoneRegex = /^[\d\s\-\+\(\)\.]{7,20}$/;
 
@@ -106,6 +123,13 @@ export const extensionCleanupFormSchema = z.object({
   bookkeeping_software: z.enum(
     bookkeepingSoftwareOptions.map((o) => o.value) as [string, ...string[]],
     { errorMap: () => ({ message: "Select your current bookkeeping software" }) }
+  ),
+  role: z.enum(roleOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select your role" }),
+  }),
+  revenue_range: z.enum(
+    revenueRangeOptions.map((o) => o.value) as [string, ...string[]],
+    { errorMap: () => ({ message: "Select your approximate annual revenue" }) }
   ),
 
   // Extension status
@@ -159,3 +183,30 @@ export const extensionCleanupFormSchema = z.object({
 });
 
 export type ExtensionCleanupFormValues = z.infer<typeof extensionCleanupFormSchema>;
+
+// Server-side payload contract for POST /api/landing-lead.
+// Built from the plain client ZodObject (no ZodEffects wrapper), extended with
+// transport metadata, marketing attribution, and anti-bot fields. `.strict()`
+// rejects any key not declared here. `business_factors` arrives as a
+// comma-joined string on the wire (the form joins the multi-select before POST),
+// so the array field from the client schema is overridden to a string.
+export const serverPayloadSchema = extensionCleanupFormSchema
+  .extend({
+    form_origin: z.literal("extension-cleanup-review"),
+    page_url: z.string().url().max(2048),
+    submitted_at: z.string().datetime(),
+    utm_source: z.string().max(200).regex(/^[^\x00-\x1F\x7F]*$/).default(""),
+    utm_medium: z.string().max(200).regex(/^[^\x00-\x1F\x7F]*$/).default(""),
+    utm_campaign: z.string().max(200).regex(/^[^\x00-\x1F\x7F]*$/).default(""),
+    utm_content: z.string().max(200).regex(/^[^\x00-\x1F\x7F]*$/).default(""),
+    utm_term: z.string().max(200).regex(/^[^\x00-\x1F\x7F]*$/).default(""),
+    gclid: z.string().max(500).regex(/^[A-Za-z0-9_\-.]*$/).default(""),
+    fbclid: z.string().max(500).regex(/^[A-Za-z0-9_\-.]*$/).default(""),
+    business_factors: z.string().max(200).default(""),
+    _hp: z.string().max(0, "honeypot must be empty").default(""),
+    _t: z.number().int().positive(),
+    _turnstile_token: z.string().max(2000).optional(),
+  })
+  .strict();
+
+export type ServerPayload = z.infer<typeof serverPayloadSchema>;
