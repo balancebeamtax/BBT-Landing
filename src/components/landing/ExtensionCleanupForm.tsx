@@ -75,7 +75,9 @@ function focusFirstControl(container: HTMLElement | null) {
   const el = container.querySelector<HTMLElement>(
     'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
   );
-  el?.focus();
+  // preventScroll so the focus jump doesn't fight the smooth scrollIntoView
+  // that runs alongside it (see the focus-on-step-change effect).
+  el?.focus({ preventScroll: true });
 }
 
 function getUrlParam(key: string): string {
@@ -224,12 +226,14 @@ export function ExtensionCleanupForm() {
     };
   }, [watch, persistState]);
 
-  // Move focus into the new step (its first control) after an explicit
-  // navigation. Replaces focusing the removed progress heading.
+  // Move focus into the new step (its first control) and scroll that step into
+  // view after an explicit navigation. Runs once the new step container has
+  // mounted, so both stay in sync for Next, Back, popstate, and onInvalid.
   React.useEffect(() => {
     if (shouldFocusStepRef.current) {
       shouldFocusStepRef.current = false;
       focusFirstControl(stepContainerRef.current);
+      stepContainerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [currentStep]);
 
@@ -243,7 +247,7 @@ export function ExtensionCleanupForm() {
       shouldFocusStepRef.current = true;
       setCurrentStep(next);
       persistState(getValues(), next);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Scroll + focus are handled by the focus-on-step-change effect.
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -264,8 +268,8 @@ export function ExtensionCleanupForm() {
     persistState(getValues(), next);
     if (typeof window !== "undefined") {
       window.history.pushState({ step: next }, "", `#step-${next}`);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    // Scroll + focus are handled by the focus-on-step-change effect.
   }
 
   function handleBack() {
@@ -285,9 +289,7 @@ export function ExtensionCleanupForm() {
       if (STEP_ALL_FIELDS[step].some((f) => erroredFields.includes(f))) {
         shouldFocusStepRef.current = true;
         setCurrentStep(step);
-        if (typeof window !== "undefined") {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        // Scroll + focus are handled by the focus-on-step-change effect.
         return;
       }
     }
@@ -460,7 +462,7 @@ export function ExtensionCleanupForm() {
       >
         {/* Step 1 — Contact information */}
         {currentStep === 1 && (
-        <div ref={stepContainerRef} role="group" aria-label="Contact information" className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Contact information" className="scroll-mt-24 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="first_name">First name</Label>
@@ -540,7 +542,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 2 — Business details */}
         {currentStep === 2 && (
-        <div ref={stepContainerRef} role="group" aria-label="Business details" className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Business details" className="scroll-mt-24 space-y-4">
           <div>
             <Label htmlFor="entity_type">Entity type</Label>
             <Controller
@@ -676,7 +678,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 3 — Extension and tax-prep status */}
         {currentStep === 3 && (
-        <div ref={stepContainerRef} role="group" aria-label="Extension and tax-prep status" className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Extension and tax-prep status" className="scroll-mt-24 space-y-4">
           <RadioField
             name="filed_extension"
             label="Did you file a federal extension for the 2025 tax return?"
@@ -729,7 +731,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 4 — Bookkeeping status */}
         {currentStep === 4 && (
-        <div ref={stepContainerRef} role="group" aria-label="Bookkeeping status" className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Bookkeeping status" className="scroll-mt-24 space-y-4">
           <RadioField
             name="reconciled_through_yearend"
             label="Are your 2025 books reconciled through year-end?"
@@ -827,7 +829,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 5 — What help do you need? + consent + submit */}
         {currentStep === 5 && (
-        <div ref={stepContainerRef} role="group" aria-label="What help do you need?" className="space-y-6">
+        <div ref={stepContainerRef} role="group" aria-label="What help do you need?" className="scroll-mt-24 space-y-6">
           <div className="space-y-4">
           <div>
             <Label htmlFor="help_needed">What are you looking for?</Label>
