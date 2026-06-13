@@ -23,7 +23,7 @@ export const bookkeepingSoftwareOptions = [
   { value: "qbo", label: "QuickBooks Online" },
   { value: "qb_desktop", label: "QuickBooks Desktop" },
   { value: "xero", label: "Xero" },
-  { value: "spreadsheet", label: "Spreadsheet" },
+  { value: "excel_or_sheets", label: "Excel or Google Sheets" },
   { value: "none", label: "No system" },
   { value: "unsure", label: "Not sure" },
 ] as const;
