@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { usStateOptions } from "@/lib/us-states";
 
 // Zod schema for the /extension-cleanup-review intake form.
 // Field names match the GHL workflow build spec (Section A.1 payload contract).
@@ -118,7 +119,9 @@ export const extensionCleanupFormSchema = z.object({
   entity_type: z.enum(entityTypeOptions.map((o) => o.value) as [string, ...string[]], {
     errorMap: () => ({ message: "Select your entity type" }),
   }),
-  state: z.string().min(2, "State is required").max(50),
+  state: z.enum(usStateOptions.map((o) => o.value) as [string, ...string[]], {
+    errorMap: () => ({ message: "Select your state" }),
+  }),
   industry: z.string().max(80).optional().or(z.literal("")),
   bookkeeping_software: z.enum(
     bookkeepingSoftwareOptions.map((o) => o.value) as [string, ...string[]],

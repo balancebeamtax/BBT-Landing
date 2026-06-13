@@ -19,6 +19,7 @@ import {
   helpNeededOptions,
   biggestIssueOptions,
 } from "@/lib/schemas/extension-cleanup";
+import { usStateOptions } from "@/lib/us-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -87,7 +88,7 @@ export function ExtensionCleanupForm() {
       business_name: "",
       business_website: "",
       entity_type: undefined,
-      state: "",
+      state: undefined,
       industry: "",
       bookkeeping_software: undefined,
       role: undefined,
@@ -374,12 +375,23 @@ export function ExtensionCleanupForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="state">State</Label>
-              <Input
-                id="state"
-                autoComplete="address-level1"
-                placeholder="e.g. California"
-                aria-invalid={!!errors.state}
-                {...register("state")}
+              <Controller
+                control={control}
+                name="state"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="state" aria-invalid={!!errors.state}>
+                      <SelectValue placeholder="Select your state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {usStateOptions.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               />
               <FieldError message={errors.state?.message} />
             </div>

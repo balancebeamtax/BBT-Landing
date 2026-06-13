@@ -38,7 +38,7 @@ function validBody(overrides: Record<string, unknown> = {}): Record<string, unkn
     email: 'jane@example.com',
     phone: '555-555-5555',
     entity_type: 's_corp',
-    state: 'California',
+    state: 'CA',
     bookkeeping_software: 'qbo',
     role: 'owner',
     revenue_range: '100k_500k',
