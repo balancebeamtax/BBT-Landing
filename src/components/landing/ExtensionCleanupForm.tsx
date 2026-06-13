@@ -33,7 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { track, trackOnce } from "@/lib/analytics";
 import { CalendlyModal } from "./CalendlyModal";
 
@@ -46,14 +45,6 @@ type FieldName = keyof ExtensionCleanupFormValues;
 
 const TOTAL_STEPS = 5;
 const STORAGE_KEY = "bbt-extension-cleanup-form-v1";
-
-const STEP_TITLES: Record<Step, string> = {
-  1: "Contact information",
-  2: "Business details",
-  3: "Extension and tax-prep status",
-  4: "Bookkeeping status",
-  5: "What help do you need?",
-};
 
 // Required fields gated by the Next button before advancing. Optional fields
 // are omitted; the two conditional Step-3 fields are added dynamically when an
@@ -77,45 +68,14 @@ const STEP_ALL_FIELDS: Record<Step, readonly FieldName[]> = {
   5: ["help_needed", "biggest_issue", "biggest_issue_other", "notes", "consent_sms", "consent_marketing", "consent_terms"],
 };
 
-const STEP_HEADING_ID = "wizard-step-heading";
-
-function StepProgress({
-  currentStep,
-  headingRef,
-}: {
-  currentStep: Step;
-  headingRef: React.RefObject<HTMLHeadingElement>;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-      <div
-        className="flex items-center gap-1.5"
-        role="img"
-        aria-label={`Form progress: step ${currentStep} of ${TOTAL_STEPS}`}
-      >
-        {([1, 2, 3, 4, 5] as Step[]).map((n) => (
-          <span
-            key={n}
-            aria-hidden="true"
-            className={cn(
-              "h-2.5 w-2.5 rounded-full transition-colors",
-              n === currentStep && "bg-cta-primary",
-              n < currentStep && "bg-cta-primary/50",
-              n > currentStep && "bg-border"
-            )}
-          />
-        ))}
-      </div>
-      <h2
-        id={STEP_HEADING_ID}
-        ref={headingRef}
-        tabIndex={-1}
-        className="font-serif text-xl font-semibold outline-none"
-      >
-        Step {currentStep} of {TOTAL_STEPS}: {STEP_TITLES[currentStep]}
-      </h2>
-    </div>
+// Move focus to the first focusable control inside the now-visible step
+// container so keyboard/screen-reader users land in the new step on navigation.
+function focusFirstControl(container: HTMLElement | null) {
+  if (!container) return;
+  const el = container.querySelector<HTMLElement>(
+    'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
   );
+  el?.focus();
 }
 
 function getUrlParam(key: string): string {
@@ -199,9 +159,11 @@ export function ExtensionCleanupForm() {
 
   // ---- Wizard step state (Spec 5) -----------------------------------------
   const [currentStep, setCurrentStep] = React.useState<Step>(1);
-  const headingRef = React.useRef<HTMLHeadingElement>(null);
-  // Set just before a navigation so the focus effect moves focus to the new
-  // step heading — but NOT on the initial mount or sessionStorage restore.
+  // Points at the currently-mounted step container (only one renders at a time),
+  // used to move focus into the new step on navigation.
+  const stepContainerRef = React.useRef<HTMLDivElement>(null);
+  // Set just before a navigation so the focus effect moves focus into the new
+  // step — but NOT on the initial mount or sessionStorage restore.
   const shouldFocusStepRef = React.useRef(false);
   // Mirrors currentStep so the debounced value-persist subscription always
   // saves the latest step without re-subscribing on every step change.
@@ -262,11 +224,12 @@ export function ExtensionCleanupForm() {
     };
   }, [watch, persistState]);
 
-  // Move focus to the new step heading after an explicit navigation.
+  // Move focus into the new step (its first control) after an explicit
+  // navigation. Replaces focusing the removed progress heading.
   React.useEffect(() => {
     if (shouldFocusStepRef.current) {
       shouldFocusStepRef.current = false;
-      headingRef.current?.focus();
+      focusFirstControl(stepContainerRef.current);
     }
   }, [currentStep]);
 
@@ -495,11 +458,9 @@ export function ExtensionCleanupForm() {
         noValidate
         className="space-y-8"
       >
-        <StepProgress currentStep={currentStep} headingRef={headingRef} />
-
         {/* Step 1 — Contact information */}
         {currentStep === 1 && (
-        <div role="group" aria-labelledby={STEP_HEADING_ID} className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Contact information" className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="first_name">First name</Label>
@@ -579,7 +540,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 2 — Business details */}
         {currentStep === 2 && (
-        <div role="group" aria-labelledby={STEP_HEADING_ID} className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Business details" className="space-y-4">
           <div>
             <Label htmlFor="entity_type">Entity type</Label>
             <Controller
@@ -715,7 +676,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 3 — Extension and tax-prep status */}
         {currentStep === 3 && (
-        <div role="group" aria-labelledby={STEP_HEADING_ID} className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Extension and tax-prep status" className="space-y-4">
           <RadioField
             name="filed_extension"
             label="Did you file a federal extension for the 2025 tax return?"
@@ -768,7 +729,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 4 — Bookkeeping status */}
         {currentStep === 4 && (
-        <div role="group" aria-labelledby={STEP_HEADING_ID} className="space-y-4">
+        <div ref={stepContainerRef} role="group" aria-label="Bookkeeping status" className="space-y-4">
           <RadioField
             name="reconciled_through_yearend"
             label="Are your 2025 books reconciled through year-end?"
@@ -866,7 +827,7 @@ export function ExtensionCleanupForm() {
 
         {/* Step 5 — What help do you need? + consent + submit */}
         {currentStep === 5 && (
-        <div role="group" aria-labelledby={STEP_HEADING_ID} className="space-y-6">
+        <div ref={stepContainerRef} role="group" aria-label="What help do you need?" className="space-y-6">
           <div className="space-y-4">
           <div>
             <Label htmlFor="help_needed">What are you looking for?</Label>
