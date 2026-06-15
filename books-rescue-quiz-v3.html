@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Books Rescue Diagnostic — Balance Beam Bookkeeping &amp; Tax</title>
+  <meta name="description" content="A 6-question diagnostic that scores how healthy your bookkeeping is and tells you the fastest next move." />
+  <meta name="robots" content="noindex" />
+
+  <!-- Fonts: Instrument Serif (display) + Plus Jakarta Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Cloudflare Turnstile (spam challenge). Real site key is injected at deploy time; never hardcoded. -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <style>
+    :root{
+      /* Slate Ember palette (teal primary) */
+      --bg:#f7f6f2; --surface:#fefdfb; --surface-2:#f3f0ea; --surface-offset:#ece8e0;
+      --border:#e2ded6; --text:#1a1a1a; --muted:#666666; --inverse:#f9f8f4;
+      --primary:#01696f; --primary-hover:#0c4e54; --primary-dark:#0f3638;
+      /* Tier accents (warm amber/red urgency signaling) */
+      --emergency:#b3261e; --crisis:#c2410c; --at-risk:#a16207; --stable:#01696f;
+      --radius:14px; --radius-lg:20px; --radius-full:999px;
+      --shadow-sm:0 1px 2px rgba(26,26,26,.06); --shadow-md:0 10px 30px rgba(26,26,26,.08);
+      --font-display:'Instrument Serif',Georgia,serif;
+      --font-body:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+      --trans:200ms cubic-bezier(.16,1,.3,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:1rem;line-height:1.55}
+    h1,h2,h3{line-height:1.12}
+    p{max-width:60ch}
+    button,input,select{font:inherit;color:inherit}
+    a{color:var(--primary)}
+    :focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:6px}
+    .wrap{width:100%;max-width:680px;margin-inline:auto;padding-inline:20px}
+    .hidden{display:none!important}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* HEADER */
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .topbar-inner{display:flex;align-items:center;gap:10px;max-width:980px;margin-inline:auto;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700}
+    .brand svg{width:30px;height:30px;color:var(--primary);flex-shrink:0}
+    .brand .name{font-family:var(--font-display);font-size:1.25rem;letter-spacing:.01em;color:var(--primary)}
+    .brand .sub{font-size:.72rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+    /* SHELL */
+    main{padding:28px 0 80px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--radius-full);background:color-mix(in srgb,var(--primary) 10%,var(--surface));color:var(--primary);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    .display{font-family:var(--font-display);font-weight:400}
+
+    /* START */
+    .start h1{font-family:var(--font-display);font-size:clamp(2.1rem,1.3rem + 3.6vw,3.25rem);margin-top:16px;max-width:16ch}
+    .start p.lede{margin-top:16px;color:var(--muted);font-size:1.05rem}
+    .start .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px 22px;color:var(--muted);font-size:.9rem}
+    .start .meta span{display:inline-flex;align-items:center;gap:8px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);display:inline-block}
+    .cta-row{margin-top:32px}
+
+    /* PROGRESS */
+    .progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .progress-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+    .progress-count{font-size:.78rem;font-weight:700;color:var(--primary)}
+    .progress{height:6px;background:var(--surface-offset);border-radius:var(--radius-full);overflow:hidden}
+    .progress>span{display:block;height:100%;width:0;background:var(--primary);border-radius:var(--radius-full);transition:width .45s cubic-bezier(.16,1,.3,1)}
+
+    /* QUESTION CARD */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:24px}
+    .q-card{margin-top:20px}
+    .q-num{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+    .q-text{font-family:var(--font-display);font-size:clamp(1.5rem,1.1rem + 1.6vw,2rem);line-height:1.18;margin-bottom:8px}
+    .q-context{font-size:.92rem;color:var(--muted);margin-bottom:20px}
+    .answers{display:grid;gap:10px}
+    .answer{width:100%;text-align:left;display:flex;gap:12px;align-items:flex-start;padding:14px 16px;min-height:56px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2);cursor:pointer;transition:border-color var(--trans),box-shadow var(--trans),background var(--trans)}
+    .answer:hover{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 16%,transparent)}
+    .answer.selected{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 7%,var(--surface))}
+    .answer .letter{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--surface-offset);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--muted);margin-top:1px}
+    .answer.selected .letter{background:var(--primary);border-color:var(--primary);color:var(--inverse)}
+    .answer .txt{flex:1}
+    .answer .title{font-weight:600}
+    .answer .sub{display:block;margin-top:3px;font-size:.82rem;color:var(--muted)}
+
+    /* NAV + BUTTONS */
+    .nav-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:24px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 24px;border-radius:var(--radius-full);border:1px solid transparent;font-weight:700;font-size:.95rem;cursor:pointer;transition:background var(--trans),color var(--trans),border-color var(--trans),opacity var(--trans)}
+    .btn-primary{background:var(--primary);color:var(--inverse)}
+    .btn-primary:hover{background:var(--primary-hover)}
+    .btn-ghost{background:transparent;border-color:var(--border);color:var(--text)}
+    .btn-ghost:hover{background:var(--surface-offset)}
+    .btn-lg{min-height:56px;padding:0 32px;font-size:1.02rem}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+
+    /* CONTACT FORM */
+    .field{display:grid;gap:7px;margin-bottom:16px}
+    .field label{font-size:.86rem;font-weight:600}
+    .field input{width:100%;min-height:52px;padding:0 15px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2)}
+    .field input:focus{border-color:var(--primary)}
+    .field .hint{font-size:.78rem;color:var(--muted)}
+    .form-error{color:var(--emergency);font-size:.85rem;margin-top:4px;min-height:1.1em}
+    .privacy{margin-top:14px;font-size:.78rem;color:var(--muted)}
+    /* Honeypot: visually + AT hidden, still in DOM for bots */
+    .hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+
+    /* ANALYZING */
+    .analyzing{text-align:center;padding:60px 0}
+    .analyzing h2{font-family:var(--font-display);font-size:2rem;margin-top:24px}
+    .analyzing p{margin:12px auto 0;color:var(--muted)}
+    .spinner{width:52px;height:52px;margin:0 auto;border-radius:50%;border:4px solid var(--surface-offset);border-top-color:var(--primary);animation:spin 1s linear infinite}
+    .analyzing-steps{margin-top:26px;display:grid;gap:10px;max-width:320px;margin-inline:auto;text-align:left}
+    .analyzing-steps li{list-style:none;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;opacity:.35;transition:opacity .3s}
+    .analyzing-steps li.on{opacity:1;color:var(--text)}
+    .analyzing-steps li::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+    .analyzing-steps li.on::before{background:var(--primary);border-color:var(--primary)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .footnote{margin-top:18px;font-size:.78rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <a href="#main" class="sr-only">Skip to content</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://balancebeamteam.com" aria-label="Balance Beam Bookkeeping &amp; Tax — home">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect x="8" y="11" width="17" height="42" rx="5" stroke="currentColor" stroke-width="4"/>
+          <rect x="25" y="11" width="13" height="42" rx="4" stroke="currentColor" stroke-width="4"/>
+          <path d="M42 15h8c4.4 0 8 3.6 8 8v18c0 4.4-3.6 8-8 8h-8V15Z" stroke="currentColor" stroke-width="4"/>
+          <path d="M17 23h8M17 31h8M17 39h8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span>
+          <span class="name">Balance Beam</span>
+          <span class="sub">Bookkeeping &amp; Tax</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ───────── START ───────── -->
+    <section id="screen-start" class="wrap start">
+      <span class="eyebrow">6 questions · under 2 minutes</span>
+      <h1>How healthy are your books, really?</h1>
+      <p class="lede">Most owners already sense something is off. This diagnostic scores where your bookkeeping actually stands, names what needs attention first, and tells you the fastest next move.</p>
+      <div class="meta">
+        <span><i class="dot"></i> Private — no account needed</span>
+        <span><i class="dot"></i> Instant score &amp; rescue tier</span>
+        <span><i class="dot"></i> No prep required</span>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-primary btn-lg" id="startBtn" type="button">Start the diagnostic →</button>
+      </div>
+      <p class="footnote">Built for small-business owners on extension, behind on cleanup, or just unsure whether the numbers can be trusted.</p>
+    </section>
+
+    <!-- ───────── QUIZ ───────── -->
+    <section id="screen-quiz" class="wrap hidden">
+      <div class="progress-head">
+        <span class="progress-label" id="progressLabel">Question 1 of 6</span>
+        <span class="progress-count" id="progressCount">1 / 6</span>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <div class="card q-card">
+        <div class="q-num" id="qNum">Question 1</div>
+        <h2 class="q-text" id="qText"></h2>
+        <p class="q-context" id="qContext"></p>
+        <div class="answers" id="answers" role="group" aria-labelledby="qText"></div>
+        <div class="nav-row">
+          <button class="btn btn-ghost" id="backBtn" type="button" disabled>Back</button>
+          <button class="btn btn-primary" id="nextBtn" type="button" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── CONTACT CAPTURE ───────── -->
+    <section id="screen-contact" class="wrap hidden">
+      <div class="progress-head">
+        <span class="progress-label">Last step</span>
+        <span class="progress-count">6 / 6 ✓</span>
+      </div>
+      <div class="progress" aria-hidden="true"><span style="width:100%"></span></div>
+
+      <div class="card q-card">
+        <div class="q-num">Your results are ready</div>
+        <h2 class="q-text">Where should we send your scorecard?</h2>
+        <p class="q-context">We'll show your Books Rescue score and tier on the next screen — and email you a copy so you have it for the call.</p>
+
+        <form id="contactForm" novalidate>
+          <div class="field">
+            <label for="leadName">Name</label>
+            <input id="leadName" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+          </div>
+          <div class="field">
+            <label for="leadEmail">Email</label>
+            <input id="leadEmail" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@yourbusiness.com" required />
+            <span class="hint">We send a copy of your scorecard here. No spam.</span>
+          </div>
+          <div class="field">
+            <label for="leadBusiness">Business name <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input id="leadBusiness" name="business" type="text" autocomplete="organization" placeholder="Acme LLC" />
+          </div>
+
+          <!-- Honeypot: must stay empty. Bots fill it; humans never see it. -->
+          <div class="hp" aria-hidden="true">
+            <label for="website_val">Website</label>
+            <input id="website_val" name="website_val" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Cloudflare Turnstile widget. Real site key swapped in at deploy. -->
+          <div class="cf-turnstile" data-sitekey="TURNSTILE_SITEKEY_PLACEHOLDER" data-theme="light"></div>
+
+          <div class="form-error" id="formError" role="alert"></div>
+
+          <button class="btn btn-primary btn-lg" id="submitBtn" type="submit" style="width:100%;margin-top:6px">See my Books Rescue score →</button>
+          <p class="privacy">By continuing you agree we may contact you about your results. Your information stays with Balance Beam.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ───────── ANALYZING ───────── -->
+    <section id="screen-analyzing" class="wrap hidden">
+      <div class="analyzing">
+        <div class="spinner" role="status" aria-label="Analyzing"></div>
+        <h2>Analyzing your books…</h2>
+        <p>Scoring your answers across currentness, reconciliation, tax readiness, and confidence.</p>
+        <ul class="analyzing-steps" id="analyzingSteps">
+          <li data-step="0">Reading your 6 answers</li>
+          <li data-step="1">Calculating your Books Rescue score</li>
+          <li data-step="2">Matching your rescue tier</li>
+          <li data-step="3">Building your scorecard</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function(){
+    "use strict";
+
+    // ── CONFIG ──────────────────────────────────────────────
+    // Client posts to our own server route; the route forwards to GHL using the
+    // GHL_LANDING_WEBHOOK_URL env var. No real webhook URL ever lives in client code.
+    var SUBMIT_ENDPOINT = "/api/books-rescue-submit";
+    var RESULT_PAGE     = "books-rescue-diagnostic.html";
+    var PAGE_LOADED_AT  = Date.now(); // for time_elapsed_ms
+
+    // ── QUIZ DATA ───────────────────────────────────────────
+    // Health-weighted scoring: HIGHER points = HEALTHIER books.
+    // Per-question maxes sum to 100 → score 0–100.
+    //   Q1 currentness 20 · Q2 support 15 · Q3 reconciliation 20
+    //   Q4 revenue(qualifier) 10 · Q5 IRS notices 20 · Q6 confidence 15
+    // Tiers: Emergency 0–39 · Crisis 40–59 · At-Risk 60–79 · Stable 80–100
+    var QUIZ = [
+      {
+        key:"months_behind",
+        text:"How far behind are your books right now?",
+        context:"Not “mostly done” — actually reconciled and current.",
+        answers:[
+          {label:"Caught up — within the last month", sub:"Current and usable.",            score:20},
+          {label:"1–3 months behind",                 sub:"A little drift has built up.",     score:13},
+          {label:"4–6 months behind",                 sub:"A real catch-up is needed.",       score:6},
+          {label:"More than 6 months — or not sure",  sub:"The current picture is unreliable.",score:0}
+        ]
+      },
+      {
+        key:"has_bookkeeper",
+        text:"Who is handling the bookkeeping today?",
+        context:"Whoever actually keeps the numbers up to date week to week.",
+        answers:[
+          {label:"A dedicated bookkeeper or accountant", sub:"Consistent professional support.", score:15},
+          {label:"Someone, but only part-time / ad hoc", sub:"Partial coverage, some gaps.",      score:10},
+          {label:"I do it all myself",                   sub:"It competes with running the business.",score:5},
+          {label:"Honestly, no one consistently",        sub:"The books are running on their own.",  score:0}
+        ]
+      },
+      {
+        key:"last_reconciliation",
+        text:"When were your accounts last reconciled?",
+        context:"Bank, card, and payment accounts matched against the books.",
+        answers:[
+          {label:"This month",                       sub:"Balances are trustworthy.",            score:20},
+          {label:"1–3 months ago",                   sub:"Slipping, but recoverable.",           score:13},
+          {label:"More than 3 months ago",           sub:"Balances likely need cleanup first.",  score:6},
+          {label:"Never — or I'm not sure",          sub:"Reconciliation is the first priority.",score:0}
+        ]
+      },
+      {
+        key:"revenue_range",
+        text:"Roughly what's your annual revenue?",
+        context:"A ballpark is fine — it helps right-size the cleanup.",
+        answers:[
+          {label:"Just getting started / under $100k", sub:"Lean setup.",                 score:6},
+          {label:"$100k – $500k",                      sub:"Growing operations.",         score:9},
+          {label:"$500k – $1M",                        sub:"Established business.",        score:10},
+          {label:"Over $1M",                           sub:"Significant at stake.",        score:8}
+        ]
+      },
+      {
+        key:"irs_notices",
+        text:"Have you received any IRS or state tax notices?",
+        context:"Letters about balances due, missing filings, or penalties.",
+        answers:[
+          {label:"No notices",                         sub:"No outstanding agency pressure.",  score:20},
+          {label:"One — already resolved",             sub:"Handled, worth confirming.",       score:12},
+          {label:"One — still open",                   sub:"A deadline is hanging over you.",   score:5},
+          {label:"Multiple or ongoing",                sub:"This needs attention now.",        score:0}
+        ]
+      },
+      {
+        key:"confidence",
+        text:"How much do you trust your current numbers?",
+        context:"If you pulled a P&L today, how confident would you be in it?",
+        answers:[
+          {label:"Very — I'd stand behind them",       sub:"Decision-ready.",                  score:15},
+          {label:"Mostly, with a few question marks",  sub:"Minor items to clarify.",          score:10},
+          {label:"Not very — I second-guess them",     sub:"Trust in the data is limited.",    score:5},
+          {label:"No confidence at all",               sub:"The numbers can't be relied on.",  score:0}
+        ]
+      }
+    ];
+
+    var TIERS = [
+      {key:"emergency", min:0,  max:39,  label:"Emergency"},
+      {key:"crisis",    min:40, max:59,  label:"Crisis"},
+      {key:"at-risk",   min:60, max:79,  label:"At-Risk"},
+      {key:"stable",    min:80, max:100, label:"Stable"}
+    ];
+    function tierFor(score){
+      for(var i=0;i<TIERS.length;i++){ if(score>=TIERS[i].min && score<=TIERS[i].max) return TIERS[i]; }
+      return TIERS[0];
+    }
+
+    // ── STATE ───────────────────────────────────────────────
+    var current = 0;
+    var answers = new Array(QUIZ.length).fill(null);
+    var started = false;
+
+    var el = {
+      start:        byId("screen-start"),
+      quiz:         byId("screen-quiz"),
+      contact:      byId("screen-contact"),
+      analyzing:    byId("screen-analyzing"),
+      startBtn:     byId("startBtn"),
+      progressBar:  byId("progressBar"),
+      progressLabel:byId("progressLabel"),
+      progressCount:byId("progressCount"),
+      qNum:         byId("qNum"),
+      qText:        byId("qText"),
+      qContext:     byId("qContext"),
+      answers:      byId("answers"),
+      backBtn:      byId("backBtn"),
+      nextBtn:      byId("nextBtn"),
+      contactForm:  byId("contactForm"),
+      formError:    byId("formError"),
+      submitBtn:    byId("submitBtn"),
+      analyzingSteps: byId("analyzingSteps")
+    };
+
+    function byId(id){ return document.getElementById(id); }
+    function show(node){ node.classList.remove("hidden"); }
+    function hide(node){ node.classList.add("hidden"); }
+
+    // ── LIGHT ANALYTICS (no-op if no dataLayer/gtag) ─────────
+    function track(name, params){
+      var payload = Object.assign({event:name, quiz:"books_rescue_diagnostic_v3"}, params||{});
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(payload);
+      if(typeof window.gtag === "function"){ window.gtag("event", name, payload); }
+    }
+
+    // ── RENDER QUESTION ─────────────────────────────────────
+    var LETTERS = ["A","B","C","D"];
+    function renderQuestion(){
+      var q = QUIZ[current];
+      el.qNum.textContent = "Question " + (current+1);
+      el.qText.textContent = q.text;
+      el.qContext.textContent = q.context;
+      el.answers.innerHTML = "";
+
+      q.answers.forEach(function(opt, idx){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "answer" + (answers[current] === idx ? " selected" : "");
+        btn.setAttribute("aria-pressed", answers[current] === idx ? "true" : "false");
+        btn.innerHTML =
+          '<span class="letter">' + LETTERS[idx] + '</span>' +
+          '<span class="txt"><span class="title">' + esc(opt.label) + '</span>' +
+          '<span class="sub">' + esc(opt.sub) + '</span></span>';
+        btn.addEventListener("click", function(){
+          if(!started){ started = true; track("quiz_start", {}); }
+          answers[current] = idx;
+          track("quiz_answered", {question_key:q.key, question_index:current+1, answer_index:idx+1, answer_score:opt.score});
+          renderQuestion();
+          el.nextBtn.disabled = false;
+        });
+        el.answers.appendChild(btn);
+      });
+
+      el.nextBtn.disabled = answers[current] === null;
+      el.nextBtn.textContent = current === QUIZ.length - 1 ? "Continue →" : "Next";
+      el.backBtn.disabled = current === 0;
+      updateProgress();
+    }
+
+    function updateProgress(){
+      var pct = (current / QUIZ.length) * 100;
+      el.progressBar.style.width = pct + "%";
+      el.progressLabel.textContent = "Question " + (current+1) + " of " + QUIZ.length;
+      el.progressCount.textContent = (current+1) + " / " + QUIZ.length;
+    }
+
+    // ── SCORING ─────────────────────────────────────────────
+    function computeScore(){
+      var total = 0;
+      for(var i=0;i<QUIZ.length;i++){
+        var a = answers[i];
+        total += (a === null) ? 0 : QUIZ[i].answers[a].score;
+      }
+      return Math.max(0, Math.min(100, total)); // each answer's max already sums to 100
+    }
+
+    // ── NAVIGATION ──────────────────────────────────────────
+    el.startBtn.addEventListener("click", function(){
+      hide(el.start); show(el.quiz);
+      renderQuestion();
+      el.quiz.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    el.nextBtn.addEventListener("click", function(){
+      if(answers[current] === null) return;
+      if(current < QUIZ.length - 1){ current++; renderQuestion(); }
+      else { goToContact(); }
+    });
+    el.backBtn.addEventListener("click", function(){
+      if(current > 0){ current--; renderQuestion(); }
+    });
+
+    function goToContact(){
+      hide(el.quiz); show(el.contact);
+      track("quiz_questions_complete", {score_preview:computeScore()});
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    // ── SUBMIT ──────────────────────────────────────────────
+    el.contactForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      el.formError.textContent = "";
+
+      var name    = byId("leadName").value.trim();
+      var email   = byId("leadEmail").value.trim();
+      var biz     = byId("leadBusiness").value.trim();
+      var honeypot= byId("website_val").value.trim();
+
+      if(!name){ el.formError.textContent = "Please enter your name."; return; }
+      if(!validEmail(email)){ el.formError.textContent = "Please enter a valid email address."; return; }
+
+      var score = computeScore();
+      var tier  = tierFor(score).key;
+      var turnstileToken = readTurnstileToken();
+
+      var payload = {
+        score: score,
+        tier: tier,
+        name: name,
+        email: email,
+        business: biz,
+        answers: QUIZ.map(function(q,i){
+          return {key:q.key, answer_index:answers[i], score:(answers[i]===null?0:q.answers[answers[i]].score)};
+        }),
+        website_val: honeypot,                       // honeypot — server rejects if non-empty
+        submitted_at: new Date().toISOString(),      // submission timestamp
+        time_elapsed_ms: Date.now() - PAGE_LOADED_AT,// fill-time for the server time-guard
+        turnstile_token: turnstileToken,
+        source: "books-rescue-quiz-v3"
+      };
+
+      el.submitBtn.disabled = true;
+      track("generate_lead", {score:score, tier:tier});
+
+      // Bots that tripped the honeypot: don't bother the backend, just move on.
+      var submit = honeypot
+        ? Promise.resolve()
+        : fetch(SUBMIT_ENDPOINT, {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(function(){ /* result still renders; server retry/queue is separate */ });
+
+      // Run the analyzing animation in parallel; redirect when both finish.
+      Promise.all([submit, runAnalyzing()]).then(function(){
+        var url = RESULT_PAGE + "?tier=" + encodeURIComponent(tier) + "&score=" + encodeURIComponent(score);
+        window.location.assign(url);
+      });
+    });
+
+    function readTurnstileToken(){
+      try{
+        if(window.turnstile && typeof window.turnstile.getResponse === "function"){
+          return window.turnstile.getResponse() || "";
+        }
+      }catch(_){}
+      // Fallback: the widget writes a hidden input named cf-turnstile-response.
+      var input = document.querySelector('[name="cf-turnstile-response"]');
+      return input ? input.value : "";
+    }
+
+    function runAnalyzing(){
+      hide(el.contact); show(el.analyzing);
+      window.scrollTo({top:0, behavior:"smooth"});
+      track("analyzing_shown", {});
+      var steps = Array.prototype.slice.call(el.analyzingSteps.querySelectorAll("li"));
+      return new Promise(function(resolve){
+        var i = 0;
+        (function tick(){
+          if(i < steps.length){
+            steps[i].classList.add("on");
+            i++;
+            setTimeout(tick, 650);
+          } else {
+            setTimeout(resolve, 500);
+          }
+        })();
+      });
+    }
+
+    // ── HELPERS ─────────────────────────────────────────────
+    function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function esc(s){ return String(s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    }); }
+
+    track("view_quiz", {});
+  })();
+  </script>
+</body>
+</html>
