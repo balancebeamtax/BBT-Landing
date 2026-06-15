@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Books Rescue Result — Balance Beam Bookkeeping &amp; Tax</title>
+  <meta name="description" content="Your Books Rescue Diagnostic result, audit scorecard, and the fastest next step." />
+  <meta name="robots" content="noindex" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#f7f6f2; --surface:#fefdfb; --surface-2:#f3f0ea; --surface-offset:#ece8e0;
+      --border:#e2ded6; --text:#1a1a1a; --muted:#666666; --inverse:#f9f8f4;
+      --primary:#01696f; --primary-hover:#0c4e54; --primary-dark:#0f3638;
+      --emergency:#b3261e; --crisis:#c2410c; --at-risk:#a16207; --stable:#01696f;
+      --radius:14px; --radius-lg:20px; --radius-full:999px;
+      --shadow-sm:0 1px 2px rgba(26,26,26,.06); --shadow-md:0 10px 30px rgba(26,26,26,.08);
+      --font-display:'Instrument Serif',Georgia,serif;
+      --font-body:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
+      --trans:200ms cubic-bezier(.16,1,.3,1);
+      /* --accent is overwritten per tier at runtime */
+      --accent:#c2410c;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;scroll-padding-top:78px}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:1rem;line-height:1.6}
+    h1,h2,h3{line-height:1.14}
+    p,li{max-width:64ch}
+    a{color:var(--primary)}
+    :focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:6px}
+    .wrap{width:100%;max-width:760px;margin-inline:auto;padding-inline:20px}
+    .display{font-family:var(--font-display);font-weight:400}
+    .hidden{display:none!important}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* HEADER */
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .topbar-inner{display:flex;align-items:center;gap:10px;max-width:980px;margin-inline:auto;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
+    .brand svg{width:30px;height:30px;color:var(--primary);flex-shrink:0}
+    .brand .name{font-family:var(--font-display);font-size:1.25rem;color:var(--primary)}
+    .brand .sub{font-size:.72rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+    main{padding:32px 0 120px}
+    section{margin-top:40px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:var(--radius-full);background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--accent);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+
+    /* ABOVE THE FOLD / PAS */
+    .hero h1{font-family:var(--font-display);font-size:clamp(2.1rem,1.3rem + 3.6vw,3.25rem);margin-top:16px;max-width:18ch}
+    .hero .diagnosis{margin-top:16px;font-size:1.1rem;color:var(--text)}
+    .hero .cta-row{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+    .reassure{margin-top:12px;font-size:.85rem;color:var(--muted)}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 28px;border-radius:var(--radius-full);border:1px solid transparent;font-weight:700;font-size:1.02rem;cursor:pointer;text-decoration:none;transition:background var(--trans),color var(--trans),border-color var(--trans)}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:hover{filter:brightness(.93)}
+    .btn-ghost{background:transparent;border-color:var(--border);color:var(--text)}
+    .btn-ghost:hover{background:var(--surface-offset)}
+    .btn-block{width:100%}
+
+    /* SCORECARD */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:24px}
+    .score-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .score-num{font-family:var(--font-display);font-size:3.4rem;line-height:1;color:var(--accent)}
+    .score-num small{font-size:1.2rem;color:var(--muted)}
+    .tier-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--radius-full);background:color-mix(in srgb,var(--accent) 14%,var(--surface));color:var(--accent);font-weight:800;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
+    .meter{margin-top:18px;height:10px;border-radius:var(--radius-full);background:linear-gradient(90deg,#b3261e 0%,#c2410c 33%,#a16207 60%,#01696f 100%);position:relative}
+    .meter .pin{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);transform:translate(-50%,-50%);box-shadow:var(--shadow-sm)}
+    .meter-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+    .scorecard-title{font-family:var(--font-display);font-size:1.5rem;margin-bottom:6px}
+    .scorecard-sub{color:var(--muted);font-size:.92rem;margin-bottom:18px}
+    .audit{display:grid;gap:10px}
+    .audit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2)}
+    .audit-row .label{font-weight:600}
+    .audit-row .desc{font-size:.8rem;color:var(--muted);margin-top:2px;max-width:42ch}
+    .pill{flex-shrink:0;display:inline-flex;align-items:center;padding:6px 12px;border-radius:var(--radius-full);font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+    .st-critical{background:color-mix(in srgb,var(--emergency) 14%,var(--surface));color:var(--emergency)}
+    .st-risk{background:color-mix(in srgb,var(--crisis) 16%,var(--surface));color:var(--crisis)}
+    .st-work{background:color-mix(in srgb,var(--at-risk) 18%,var(--surface));color:var(--at-risk)}
+    .st-solid{background:color-mix(in srgb,var(--stable) 14%,var(--surface));color:var(--stable)}
+
+    /* PAS DETAIL */
+    .pas-block{padding:16px 0;border-top:1px solid var(--border)}
+    .pas-block:first-child{border-top:none;padding-top:0}
+    .pas-block strong{display:block;margin-bottom:6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)}
+    .pas-block p{color:var(--text)}
+
+    /* CALL */
+    .mini-list{display:grid;gap:12px;margin-top:16px}
+    .mini-list li{list-style:none;display:flex;gap:10px;align-items:flex-start;color:var(--text)}
+    .mini-list li::before{content:"✓";color:var(--primary);font-weight:800;flex-shrink:0}
+
+    /* BOOKING */
+    .booking h2{font-family:var(--font-display);font-size:1.9rem}
+    .booking p.sub{color:var(--muted);margin-top:8px}
+    .calendly-inline-widget{min-width:320px;height:680px;margin-top:18px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)}
+    .embed-fallback{margin-top:14px;font-size:.88rem;color:var(--muted)}
+
+    /* STICKY MOBILE CTA */
+    .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--border)}
+    .sticky-cta .btn{width:100%;min-height:52px}
+    @media(min-width:760px){ .sticky-cta{display:none} main{padding-bottom:60px} }
+
+    .footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);font-size:.82rem;color:var(--muted)}
+    .footer a{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <a href="#main" class="sr-only">Skip to content</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://balancebeamteam.com" aria-label="Balance Beam Bookkeeping &amp; Tax — home">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect x="8" y="11" width="17" height="42" rx="5" stroke="currentColor" stroke-width="4"/>
+          <rect x="25" y="11" width="13" height="42" rx="4" stroke="currentColor" stroke-width="4"/>
+          <path d="M42 15h8c4.4 0 8 3.6 8 8v18c0 4.4-3.6 8-8 8h-8V15Z" stroke="currentColor" stroke-width="4"/>
+          <path d="M17 23h8M17 31h8M17 39h8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span>
+          <span class="name">Balance Beam</span><br/>
+          <span class="sub">Bookkeeping &amp; Tax</span>
+        </span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <!-- ABOVE THE FOLD: PROBLEM + headline + diagnosis + dominant CTA -->
+    <section class="hero" style="margin-top:24px">
+      <span class="eyebrow" id="eyebrow">Books Rescue Result</span>
+      <h1 id="headline">Your books need a structured cleanup review.</h1>
+      <p class="diagnosis" id="diagnosis"></p>
+      <div class="cta-row">
+        <a class="btn btn-primary" id="ctaTop" href="https://calendly.com/balancebeamteam/books-rescue">Book my Books Rescue call</a>
+      </div>
+      <p class="reassure">You don't need clean books before this call — this call is how the cleanup begins.</p>
+    </section>
+
+    <!-- SCORECARD: tier result, visually -->
+    <section>
+      <div class="card">
+        <div class="score-head">
+          <div>
+            <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)">Your Books Rescue Score</div>
+            <div class="score-num"><span id="scoreNum">—</span><small>/100</small></div>
+          </div>
+          <span class="tier-badge" id="tierBadge">—</span>
+        </div>
+        <div class="meter" aria-hidden="true"><span class="pin" id="meterPin"></span></div>
+        <div class="meter-labels"><span>Emergency</span><span>Crisis</span><span>At-Risk</span><span>Stable</span></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2 class="scorecard-title">Audit scorecard</h2>
+        <p class="scorecard-sub">A read on the four areas a Books Rescue call works through first.</p>
+        <div class="audit" id="audit"></div>
+      </div>
+    </section>
+
+    <!-- AGITATION + SOLUTION (rest of PAS) -->
+    <section>
+      <div class="card">
+        <div class="pas-block">
+          <strong>What the diagnostic found</strong>
+          <p id="problemCopy"></p>
+        </div>
+        <div class="pas-block">
+          <strong>Where this tends to go</strong>
+          <p id="agitationCopy"></p>
+        </div>
+        <div class="pas-block">
+          <strong>The most efficient next move</strong>
+          <p id="solutionCopy"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT HAPPENS ON THE CALL -->
+    <section>
+      <div class="card">
+        <h2 class="scorecard-title">What happens on the call</h2>
+        <p class="scorecard-sub" style="margin-bottom:0">In 15 minutes, we review where the books stand, what's probably missing, what needs attention first, and what the best next step looks like.</p>
+        <ul class="mini-list">
+          <li>No prep documents needed for the first call.</li>
+          <li>You leave with a clear priority list — not a pitch.</li>
+          <li>If it's smaller than it feels, you'll be told that directly.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- BOOKING: dominant CTA + embedded calendar directly under it -->
+    <section class="booking" id="book">
+      <h2 id="bookingHeadline">Book your Books Rescue call</h2>
+      <p class="sub" id="bookingSub">Pick a time that works — the call is free and there's no prep required.</p>
+      <a class="btn btn-primary btn-block" id="ctaBottom" href="https://calendly.com/balancebeamteam/books-rescue" style="margin-top:18px">Book my Books Rescue call</a>
+
+      <!-- Calendly inline embed. data-url is the placeholder; swapped for the env URL at deploy. -->
+      <div class="calendly-inline-widget" data-url="https://calendly.com/balancebeamteam/books-rescue" data-resize="true" id="calendlyEmbed"></div>
+      <p class="embed-fallback">Calendar not loading? <a id="calendlyFallback" href="https://calendly.com/balancebeamteam/books-rescue" target="_blank" rel="noopener noreferrer">Open the scheduler in a new tab →</a></p>
+    </section>
+
+    <div class="footer">
+      <p>Balance Beam Bookkeeping &amp; Tax · <a href="https://balancebeamteam.com">balancebeamteam.com</a></p>
+      <p style="margin-top:6px">This diagnostic is an estimate based on your answers, not a formal audit or tax opinion.</p>
+    </div>
+  </main>
+
+  <!-- Sticky mobile CTA -->
+  <div class="sticky-cta">
+    <a class="btn btn-primary" href="#book" id="ctaSticky">Book my rescue call →</a>
+  </div>
+
+  <!-- Calendly embed widget script -->
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <script>
+  (function(){
+    "use strict";
+
+    // ── TIER CONTENT ───────────────────────────────────────
+    // Audit statuses use levels: critical | risk | work | solid (worst → best).
+    var STATUS = {
+      critical:{label:"Critical", cls:"st-critical"},
+      risk:    {label:"At risk",  cls:"st-risk"},
+      work:    {label:"Needs work",cls:"st-work"},
+      solid:   {label:"Solid",    cls:"st-solid"}
+    };
+
+    var CATEGORIES = [
+      {label:"Bookkeeping currentness", desc:"How current and reconciled the day-to-day books are."},
+      {label:"Reconciliation confidence", desc:"Whether account balances can be trusted right now."},
+      {label:"Tax readiness", desc:"How close the books are to supporting a clean filing."},
+      {label:"Decision clarity", desc:"Whether the numbers can support confident decisions."}
+    ];
+
+    var TIERS = {
+      emergency:{
+        label:"Emergency", accent:"var(--emergency)", score:25,
+        eyebrow:"Books Rescue · Emergency",
+        headline:"Your books need a rescue — and time is the risk.",
+        diagnosis:"Based on your answers, the books are behind enough that the numbers can't be relied on for tax, lending, or decisions right now.",
+        problem:"Several signals lined up at once: significant backlog, little or no reconciliation, and real tax exposure. At this stage the books aren't simply delayed — they can't currently be trusted.",
+        agitation:"Every week this waits, the cleanup grows, deadlines move closer, and the people you'll eventually hand this to — a CPA, a lender, the IRS — get more expensive and less forgiving. Penalties and last-minute scrambles are the usual ending.",
+        solution:"A Books Rescue call triages exactly this. In 15 minutes we map what to fix first, what can wait, and the fastest path back to numbers you can trust — before the next deadline.",
+        cta:"Book my emergency rescue call",
+        bookingHeadline:"Let's stop the bleeding — book your rescue call",
+        bookingSub:"This is time-sensitive. Grab the soonest slot that works; no prep needed.",
+        audit:["critical","critical","critical","critical"]
+      },
+      crisis:{
+        label:"Crisis", accent:"var(--crisis)", score:50,
+        eyebrow:"Books Rescue · Crisis",
+        headline:"The books are behind enough to be costing you.",
+        diagnosis:"Your answers suggest real gaps in reconciliation and tax readiness that are starting to compound.",
+        problem:"Your answers suggest the books are no longer simply delayed. There are likely gaps in reconciliation, categorization, or visibility that make the numbers hard to trust.",
+        agitation:"That usually creates a chain reaction: slower decisions, more uncertainty around taxes, and more stress every time a deadline gets closer. What feels like a bookkeeping issue starts affecting confidence across the whole business.",
+        solution:"A Books Rescue Diagnostic turns uncertainty into a concrete action plan. The call identifies what's wrong, what matters first, and what the fastest cleanup path looks like.",
+        cta:"Book my rescue call",
+        bookingHeadline:"Turn this into a plan — book your rescue call",
+        bookingSub:"Pick a time that works. You'll leave with a clear first move, not a pitch.",
+        audit:["risk","critical","risk","risk"]
+      },
+      "at-risk":{
+        label:"At-Risk", accent:"var(--at-risk)", score:70,
+        eyebrow:"Books Rescue · Tune-up",
+        headline:"Your books are mostly holding — but drifting.",
+        diagnosis:"The fundamentals are there, but a few gaps are creating quiet drag and limiting how much you can trust the numbers.",
+        problem:"A few things are working, but the process is fragile enough that surprises reappear and some accounts have slipped out of date.",
+        agitation:"Quiet drag is the expensive kind — it doesn't look like a crisis, so it gets deprioritized until a filing, a lender, or a decision forces the issue. Caught now, it's a tune-up, not a rescue.",
+        solution:"A focused tune-up call isolates the two or three sources of friction and gets you back to current — before it grows into a full cleanup.",
+        cta:"Book my tune-up call",
+        bookingHeadline:"A quick tune-up keeps this from growing",
+        bookingSub:"Grab a time. We'll pinpoint the few things worth fixing now.",
+        audit:["work","work","work","risk"]
+      },
+      stable:{
+        label:"Stable", accent:"var(--stable)", score:90,
+        eyebrow:"Books Rescue · Strategy",
+        headline:"Your books look solid. Let's make them work harder.",
+        diagnosis:"Your answers point to current, reconciled books you can mostly trust — a strong foundation to build on.",
+        problem:"The fundamentals are intact. The remaining upside isn't cleanup — it's making the numbers do more for you.",
+        agitation:"Stable books are where the real opportunities show up: cleaner tax planning, better cash-flow visibility, and faster decisions. Most owners at this stage leave that value on the table.",
+        solution:"A strategy call reviews what's working and where proactive tax planning or tighter monthly reporting could save money and sharpen decisions.",
+        cta:"Book my strategy call",
+        bookingHeadline:"Let's put your books to work",
+        bookingSub:"Book a strategy call to find the next bit of upside.",
+        audit:["solid","solid","work","solid"]
+      }
+    };
+
+    // ── READ URL PARAMS (tier + optional score) ─────────────
+    var params = new URLSearchParams(window.location.search);
+    var tierKey = (params.get("tier") || "").toLowerCase().trim();
+    if(!TIERS[tierKey]) tierKey = "at-risk"; // sensible default for a direct/smoketest load
+    var tier = TIERS[tierKey];
+
+    var rawScore = parseInt(params.get("score"), 10);
+    var score = (!isNaN(rawScore) && rawScore >= 0 && rawScore <= 100) ? rawScore : tier.score;
+
+    // ── APPLY ───────────────────────────────────────────────
+    document.documentElement.style.setProperty("--accent", tier.accent);
+
+    setText("eyebrow", tier.eyebrow);
+    setText("headline", tier.headline);
+    setText("diagnosis", tier.diagnosis);
+    setText("problemCopy", tier.problem);
+    setText("agitationCopy", tier.agitation);
+    setText("solutionCopy", tier.solution);
+    setText("scoreNum", String(score));
+    setText("bookingHeadline", tier.bookingHeadline);
+    setText("bookingSub", tier.bookingSub);
+
+    var badge = document.getElementById("tierBadge");
+    badge.textContent = tier.label;
+
+    // CTA labels (all three CTAs share the tier action verb)
+    document.getElementById("ctaTop").textContent = tier.cta;
+    document.getElementById("ctaBottom").textContent = tier.cta;
+    document.getElementById("ctaSticky").textContent = tier.cta + " →";
+
+    // Meter pin position
+    document.getElementById("meterPin").style.left = score + "%";
+
+    // Audit scorecard rows
+    var auditWrap = document.getElementById("audit");
+    CATEGORIES.forEach(function(cat, i){
+      var st = STATUS[tier.audit[i]] || STATUS.work;
+      var row = document.createElement("div");
+      row.className = "audit-row";
+      row.innerHTML =
+        '<div><div class="label">' + cat.label + '</div><div class="desc">' + cat.desc + '</div></div>' +
+        '<span class="pill ' + st.cls + '">' + st.label + '</span>';
+      auditWrap.appendChild(row);
+    });
+
+    // Top CTA scrolls to the embedded calendar (the embed sits right below it).
+    document.getElementById("ctaTop").addEventListener("click", function(e){
+      e.preventDefault();
+      document.getElementById("book").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    // ── ANALYTICS ───────────────────────────────────────────
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({event:"view_result", tier:tierKey, score:score, quiz:"books_rescue_diagnostic_v3"});
+    ["ctaTop","ctaBottom","ctaSticky"].forEach(function(id){
+      document.getElementById(id).addEventListener("click", function(){
+        window.dataLayer.push({event:"book_click", cta:id, tier:tierKey});
+      });
+    });
+
+    function setText(id, txt){ var n = document.getElementById(id); if(n) n.textContent = txt; }
+  })();
+  </script>
+</body>
+</html>
