@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMP-233 — Books Rescue Diagnostic Funnel · BBTeam Build Hub</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #f7f6f2;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+    header { border-bottom: 2px solid #01696f; padding-bottom: 1rem; margin-bottom: 2rem; }
+    header h1 { font-size: 1.6rem; color: #01696f; }
+    header .meta { font-size: 0.875rem; color: #666; margin-top: 0.25rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      margin-right: 0.4rem;
+      background: #cedcd8;
+      color: #0f3638;
+    }
+    .badge.red { background: #fde8e8; color: #a12c2c; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+    th { background: #e6e4df; text-align: left; padding: 0.5rem 0.75rem; }
+    td { padding: 0.5rem 0.75rem; border-top: 1px solid #dcd9d5; }
+    h2 { font-size: 1.15rem; color: #0f3638; margin: 2rem 0 0.75rem; border-left: 3px solid #01696f; padding-left: 0.6rem; }
+    h3 { font-size: 1rem; color: #444; margin: 1.25rem 0 0.5rem; }
+    ul, ol { padding-left: 1.4rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.3rem; }
+    code { background: #edeae5; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85rem; }
+    .flow { background: #1c1b19; color: #cdccca; font-family: monospace; font-size: 0.82rem; padding: 1rem 1.25rem; border-radius: 6px; overflow-x: auto; white-space: pre; margin: 0.75rem 0; }
+    .tier-table td:first-child { font-weight: 600; }
+    .preview-links a { display: inline-block; margin-right: 1rem; color: #01696f; font-weight: 600; text-decoration: none; }
+    .preview-links a:hover { text-decoration: underline; }
+    .preview-links .note { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .superrule { background: #fff8e1; border: 1px solid #f0c040; border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .superrule ul { margin: 0.4rem 0; }
+    .checklist li { list-style: none; padding-left: 0; }
+    .checklist li::before { content: "☐ "; }
+    footer { margin-top: 3rem; font-size: 0.8rem; color: #999; border-top: 1px solid #dcd9d5; padding-top: 1rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>IMP-233 — Books Rescue Diagnostic Funnel</h1>
+    <div class="meta">
+      <span class="badge">BBTeam</span>
+      <span class="badge">balancebeamteam.com</span>
+      <span class="badge red">Not started</span>
+      <span class="badge">P1 — High</span>
+      &nbsp;·&nbsp; Updated 2026-06-14 &nbsp;·&nbsp; Internal build hub — not client-facing
+    </div>
+  </header>
+
+  <table>
+    <tr><th>Field</th><th>Value</th></tr>
+    <tr><td>Logical IMP</td><td><strong>IMP-233</strong> (canonical; follows IMP-231 — there is no IMP-232)</td></tr>
+    <tr><td>Lane</td><td>BBTeam — <code>balancebeamteam.com</code> only</td></tr>
+    <tr><td>Repo</td><td><code>balancebeamtax/BBT-Landing</code></td></tr>
+    <tr><td>Branch</td><td><code>feature/IMP-233-books-rescue-diagnostic</code></td></tr>
+    <tr><td>Commit prefix</td><td><code>[IMP-233]</code> on every commit</td></tr>
+    <tr><td>GHL Location</td><td><code>j8g8NJAU4pj2Qz8YM50v</code> (BBTeam sub-account only)</td></tr>
+    <tr><td>Notion auto-ID</td><td>241 · logical ID governs</td></tr>
+  </table>
+
+  <h2>Live Preview Links</h2>
+  <div class="preview-links">
+    <a href="books-rescue-diagnostic.html">books-rescue-diagnostic.html</a>
+    <a href="books-rescue-quiz-v3.html">books-rescue-quiz-v3.html</a>
+    <p class="note">Links resolve once those files are committed alongside this page in docs/.</p>
+  </div>
+
+  <h2>Scope</h2>
+  <p>A diagnostic-quiz-first conversion funnel on <code>balancebeamteam.com</code> that moves a qualified small-business owner from bookkeeping anxiety to a booked Books Rescue call.</p>
+  <div class="flow">quiz cover → 5–7 qualification steps → "analyzing" transition
+→ scored result + audit scorecard → contact capture
+→ result/booking page → embedded calendar → confirmation + reminder sequence</div>
+
+  <h2>How a Lead Moves Through the System</h2>
+  <div class="flow">[1] Webhook Trigger (POST /books-rescue-submit)
+      ↓
+[2] Honeypot  →  [3] Time Guard (≥12000ms)  →  [4] Turnstile Validate
+      ↓ pass
+[5] Quality Scorer
+      ↓
+[6] IF score ≥ 60 ?
+     ├─ YES → [7] GHL Create/Update Contact → [8] Tag Writer → [9] Pipeline Stage
+     │         → [10] Tier Router (emergency | crisis | at-risk | stable) → Resend alert
+     └─ NO  → [12] Tag: quality-hold → [13] Log (no alert fired)</div>
+
+  <h2>GHL Follow-Up Tiers</h2>
+  <table class="tier-table">
+    <tr><th>Tier</th><th>Trigger Tag</th><th>Shape</th></tr>
+    <tr><td>Emergency</td><td><code>books-rescue-emergency</code></td><td>Push alert → SMS → 3-email urgency sequence, booking-gated exits</td></tr>
+    <tr><td>Crisis</td><td><code>books-rescue-crisis</code></td><td>High-urgency follow-up sequence</td></tr>
+    <tr><td>At-Risk</td><td><code>books-rescue-at-risk</code></td><td>Soft alert → 5-email nurture, booking-gated exits</td></tr>
+    <tr><td>Stable</td><td><code>books-rescue-stable</code></td><td>Low-urgency nurture / upsell</td></tr>
+  </table>
+  <p>All four trigger on <strong>Contact Tag Added</strong>. Do not clone any prior IMP workflow. Do not activate in production until smoketest passes.</p>
+
+  <h2>What This Build Delivers</h2>
+  <ul>
+    <li><code>books-rescue-diagnostic.html</code> — result page: PAS stack, audit scorecard, booking block</li>
+    <li><code>books-rescue-quiz-v3.html</code> — multi-step diagnostic quiz + client-side scoring</li>
+    <li><code>04_n8n_workflow_spec.md</code> — webhook → spam → scorer → GHL handoff → tier alerts</li>
+    <li><code>06_ghl_workflow_spec.md</code> — Emergency / Crisis / At-Risk / Stable follow-up specs</li>
+    <li><code>docs/imp/IMP-233-books-rescue-diagnostic.md</code> — this build record</li>
+  </ul>
+
+  <h2>Superrule Lock</h2>
+  <div class="superrule">
+    <ul>
+      <li><strong>Domain:</strong> <code>balancebeamteam.com</code> ONLY — no <code>balancebeamtax.com</code> in any client-facing asset.</li>
+      <li><strong>Internal alerts TO:</strong> <code>leads@balancebeamtax.com</code> (approved cross-lane bridge — only exception), subject prefix <code>[bbt-team/books-rescue]</code>.</li>
+      <li><strong>FROM email:</strong> <code>no-reply@balancebeamteam.com</code> (system) · <code>hello@balancebeamteam.com</code> (client-facing).</li>
+      <li><strong>Webhooks by ID suffix only.</strong> Never place a real GHL webhook URL in committed code. Use the IMP-233-specific suffix; never reuse <code>d811fb0c</code>. Real URLs live in server-only env vars.</li>
+      <li><strong>No PR or merge by agents.</strong> GHL workflow mappings are owner-only edits.</li>
+    </ul>
+  </div>
+
+  <h2>QA Checklist</h2>
+  <ul class="checklist">
+    <li>Quiz renders + scores correctly on a 390px phone; result CTA in first viewport</li>
+    <li>Honeypot, 12s time-guard, and Turnstile reject synthetic submits</li>
+    <li>Scorer thresholds route to the correct tier tag</li>
+    <li>GHL contact created/updated; tier tag + pipeline stage set</li>
+    <li>Internal alert lands at leads@balancebeamtax.com with [bbt-team/books-rescue] prefix</li>
+    <li>No real webhook URL in any committed file or client bundle</li>
+    <li>Calendar embeds directly under the result/booking block</li>
+  </ul>
+
+  <h2>Smoketest Checklist</h2>
+  <ul class="checklist">
+    <li>Adversarial smoke on Preview URL (spam-path curl tests)</li>
+    <li>One real quick submit + one full-intake submit; verify GHL + notification</li>
+    <li>Confirmation + reminder/reconfirmation sequence fires without duplicates</li>
+  </ul>
+
+  <h2>Owner-Only Actions (human-gated)</h2>
+  <ul class="checklist">
+    <li>GHL field mapping + workflow publish</li>
+    <li>Vercel env vars (GHL_LANDING_WEBHOOK_URL, Turnstile keys, Calendly URL)</li>
+    <li>PR open + merge to main</li>
+    <li>Production deploy + DNS verification</li>
+    <li>Re-link the n8n dependency to its verified canonical IMP</li>
+    <li>Notion Change Log write (BBTeam single-writer rule)</li>
+  </ul>
+
+  <h2>Change Log</h2>
+  <table>
+    <tr><th>Date</th><th>Phase</th><th>Note</th></tr>
+    <tr><td>2026-06-14</td><td>Spec drafted</td><td>Row created from Perplexity council deliverables; MP-233 → IMP-233 reconciled; GitHub build record + Pages hub produced.</td></tr>
+  </table>
+  <p style="font-size:0.85rem;color:#888;margin-top:0.5rem;">Update after each phase: branch created → GHL built → smoketest passed → PR merged → deploy verified.</p>
+
+  <footer>
+    IMP-233 · BBTeam lane · balancebeamteam.com ·
+    <a href="https://app.notion.com/p/37f0198d6abc819693bfee5dad8e5238" target="_blank" rel="noopener noreferrer">Notion row</a> ·
+    <a href="https://github.com/balancebeamtax/BBT-Landing" target="_blank" rel="noopener noreferrer">GitHub repo</a>
+  </footer>
+
+</div>
+</body>
+</html>
