@@ -184,8 +184,12 @@
 
         <form id="contactForm" novalidate>
           <div class="field">
-            <label for="leadName">Name</label>
-            <input id="leadName" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+            <label for="leadFirstName">First name</label>
+            <input id="leadFirstName" name="first_name" type="text" autocomplete="given-name" placeholder="Your first name" required />
+          </div>
+          <div class="field">
+            <label for="leadLastName">Last name</label>
+            <input id="leadLastName" name="last_name" type="text" autocomplete="family-name" placeholder="Your last name" required />
           </div>
           <div class="field">
             <label for="leadEmail">Email</label>
@@ -194,7 +198,7 @@
           </div>
           <div class="field">
             <label for="leadBusiness">Business name <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-            <input id="leadBusiness" name="business" type="text" autocomplete="organization" placeholder="Acme LLC" />
+            <input id="leadBusiness" name="company_name" type="text" autocomplete="organization" placeholder="Acme LLC" />
           </div>
 
           <!-- Honeypot: must stay empty. Bots fill it; humans never see it. -->
@@ -442,31 +446,35 @@
       e.preventDefault();
       el.formError.textContent = "";
 
-      var name    = byId("leadName").value.trim();
-      var email   = byId("leadEmail").value.trim();
-      var biz     = byId("leadBusiness").value.trim();
-      var honeypot= byId("website_val").value.trim();
+      var firstName = byId("leadFirstName").value.trim();
+      var lastName  = byId("leadLastName").value.trim();
+      var email     = byId("leadEmail").value.trim();
+      var company   = byId("leadBusiness").value.trim();
+      var honeypot  = byId("website_val").value.trim();
 
-      if(!name){ el.formError.textContent = "Please enter your name."; return; }
+      if(!firstName){ el.formError.textContent = "Please enter your first name."; return; }
+      if(!lastName){ el.formError.textContent = "Please enter your last name."; return; }
       if(!validEmail(email)){ el.formError.textContent = "Please enter a valid email address."; return; }
 
       var score = computeScore();
       var tier  = tierFor(score).key;
-      var turnstileToken = readTurnstileToken();
+      var cfTurnstileResponse = readTurnstileToken();
 
       var payload = {
-        score: score,
+        quiz_score: score,                           // n8n field name
+        raw_score: score,                            // alias — same value as quiz_score
         tier: tier,
-        name: name,
+        first_name: firstName,
+        last_name: lastName,
         email: email,
-        business: biz,
+        company_name: company,
         answers: QUIZ.map(function(q,i){
           return {key:q.key, answer_index:answers[i], score:(answers[i]===null?0:q.answers[answers[i]].score)};
         }),
-        website_val: honeypot,                       // honeypot — server rejects if non-empty
-        submitted_at: new Date().toISOString(),      // submission timestamp
-        time_elapsed_ms: Date.now() - PAGE_LOADED_AT,// fill-time for the server time-guard
-        turnstile_token: turnstileToken,
+        website_val: honeypot,                        // honeypot — server rejects if non-empty
+        submission_ts: new Date().toISOString(),      // submission timestamp
+        time_elapsed_ms: Date.now() - PAGE_LOADED_AT, // fill-time for the server time-guard
+        cf_turnstile_response: cfTurnstileResponse,
         source: "books-rescue-quiz-v3"
       };
 
