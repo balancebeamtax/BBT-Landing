@@ -113,6 +113,17 @@
     .calendly-inline-widget{min-width:320px;height:680px;margin-top:18px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface)}
     .embed-fallback{margin-top:14px;font-size:.88rem;color:var(--muted)}
 
+    /* SOCIAL PROOF + FAQ */
+    .social-proof,.faq{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:24px}
+    .social-proof h2,.faq h2{font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px}
+    .social-proof ul{list-style:none;margin-top:8px}
+    .social-proof li{padding:13px 0;border-top:1px solid var(--border);color:var(--text)}
+    .social-proof li:first-child{border-top:none}
+    .faq-item{padding:18px 0;border-top:1px solid var(--border)}
+    .faq-item:first-of-type{border-top:none}
+    .faq-item h3{font-size:1rem;font-weight:700;margin-bottom:6px}
+    .faq-item p{color:var(--muted)}
+
     /* STICKY MOBILE CTA */
     .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--border)}
     .sticky-cta .btn{width:100%;min-height:52px}
@@ -206,6 +217,44 @@
       <!-- Calendly inline embed. data-url is the placeholder; swapped for the env URL at deploy. -->
       <div class="calendly-inline-widget" data-url="https://calendly.com/balancebeamteam/books-rescue" data-resize="true" id="calendlyEmbed"></div>
       <p class="embed-fallback">Calendar not loading? <a id="calendlyFallback" href="https://calendly.com/balancebeamteam/books-rescue" target="_blank" rel="noopener noreferrer">Open the scheduler in a new tab →</a></p>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section class="social-proof">
+      <h2>How we work</h2>
+      <ul>
+        <li>Small-business focus — we work exclusively with owners, not corporations</li>
+        <li>QuickBooks cleanup experience — most catch-ups completed in 3–4 weeks</li>
+        <li>California compliance familiarity</li>
+        <li>Structured intake — you'll always know where things stand</li>
+        <li>Secure client portal for document sharing</li>
+        <li>Founder-led review — not handed off to a junior</li>
+      </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq">
+      <h2>Common questions</h2>
+      <div class="faq-item">
+        <h3>Is this for me?</h3>
+        <p>If you own a small business and your books are behind, messy, or unreconciled — yes. This diagnostic is designed for service-based businesses, freelancers, and LLCs with 1–20 employees.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What happens after I submit?</h3>
+        <p>You get a scored result immediately. Based on your tier, a member of the Balance Beam Team will follow up within 1 business day to discuss next steps — no pressure, just a conversation.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do I need my books ready before the call?</h3>
+        <p>No. The call is diagnostic — we look at where things stand together. You don't need to prepare anything.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is this tax advice?</h3>
+        <p>No. This is a bookkeeping health diagnostic. We can discuss your books and cleanup options; specific tax advice requires a formal engagement.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How much does a Books Rescue engagement cost?</h3>
+        <p>Cost depends on how far behind your books are and the complexity of your transactions. We'll give you a clear estimate on the call — no surprises.</p>
+      </div>
     </section>
 
     <div class="footer">
