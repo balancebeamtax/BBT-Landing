@@ -205,6 +205,15 @@
             <input id="leadBusiness" name="company_name" type="text" autocomplete="organization" placeholder="Acme LLC" />
           </div>
 
+          <input type="hidden" name="utm_source"     id="utm_source" />
+          <input type="hidden" name="utm_medium"     id="utm_medium" />
+          <input type="hidden" name="utm_campaign"   id="utm_campaign" />
+          <input type="hidden" name="utm_content"    id="utm_content" />
+          <input type="hidden" name="utm_term"       id="utm_term" />
+          <input type="hidden" name="landing_page"   id="landing_page" />
+          <input type="hidden" name="referrer"       id="referrer" />
+          <input type="hidden" name="first_seen_url" id="first_seen_url" />
+
           <!-- Honeypot: must stay empty. Bots fill it; humans never see it. -->
           <div class="hp" aria-hidden="true">
             <label for="website_val">Website</label>
@@ -248,6 +257,16 @@
     var SUBMIT_ENDPOINT = "/api/books-rescue-submit";
     var RESULT_PAGE     = "books-rescue-diagnostic.html";
     var PAGE_LOADED_AT  = Date.now(); // for time_elapsed_ms
+
+    (function(){
+      var p = new URLSearchParams(window.location.search);
+      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){
+        var el = document.getElementById(k); if(el) el.value = p.get(k)||'';
+      });
+      var lp = document.getElementById('landing_page'); if(lp) lp.value = window.location.pathname;
+      var ref = document.getElementById('referrer'); if(ref) ref.value = document.referrer||'';
+      var fsu = document.getElementById('first_seen_url'); if(fsu) fsu.value = window.location.href;
+    })();
 
     // ── QUIZ DATA ───────────────────────────────────────────
     // Health-weighted scoring: HIGHER points = HEALTHIER books.
@@ -482,7 +501,15 @@
         time_elapsed_ms: Date.now() - PAGE_LOADED_AT, // fill-time for the server time-guard
         cf_turnstile_response: cfTurnstileResponse,
         source: "books-rescue-quiz-v3",
-        domain: "balancebeamteam.com"
+        domain: "balancebeamteam.com",
+        utm_source:     document.getElementById('utm_source').value,
+        utm_medium:     document.getElementById('utm_medium').value,
+        utm_campaign:   document.getElementById('utm_campaign').value,
+        utm_content:    document.getElementById('utm_content').value,
+        utm_term:       document.getElementById('utm_term').value,
+        landing_page:   document.getElementById('landing_page').value,
+        referrer:       document.getElementById('referrer').value,
+        first_seen_url: document.getElementById('first_seen_url').value
       };
 
       el.submitBtn.disabled = true;
