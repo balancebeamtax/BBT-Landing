@@ -29,12 +29,13 @@
 
   <style>
     :root{
-      /* Slate Ember palette (teal primary) */
-      --bg:#f7f6f2; --surface:#fefdfb; --surface-2:#f3f0ea; --surface-offset:#ece8e0;
-      --border:#e2ded6; --text:#1a1a1a; --muted:#666666; --inverse:#f9f8f4;
-      --primary:#01696f; --primary-hover:#0c4e54; --primary-dark:#0f3638;
-      /* Tier accents (warm amber/red urgency signaling) */
-      --emergency:#b3261e; --crisis:#c2410c; --at-risk:#a16207; --stable:#01696f;
+      /* Slate Ember palette (IMP-235: Option A — single amber-gold urgency accent) */
+      --bg:#ECEAE5; --surface:#F0EDE8; --surface-2:#F4F2EE; --surface-offset:#E5E2DC;
+      --border:#C4BFB8; --text:#1C1A16; --muted:#635F59; --inverse:#F0EDE8;
+      --primary:#017B82; --primary-hover:#015E64; --primary-dark:#0F3638;
+      /* Single accent for all urgent tiers (Slate Ember strict); stable uses primary teal */
+      --accent:#B87D3A;
+      --emergency:#B87D3A; --crisis:#B87D3A; --at-risk:#B87D3A; --stable:#017B82;
       --radius:14px; --radius-lg:20px; --radius-full:999px;
       --shadow-sm:0 1px 2px rgba(26,26,26,.06); --shadow-md:0 10px 30px rgba(26,26,26,.08);
       --font-display:'Instrument Serif',Georgia,serif;
