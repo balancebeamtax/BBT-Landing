@@ -35,6 +35,48 @@
   }
 }
 
+/*
+ * Slate Ember theme tokens — scoped to the Books Rescue funnel (IMP-233).
+ * Consumed only by the `se-*` Tailwind tokens, which only the
+ * /books-rescue-diagnostic page uses, so this has no effect on other pages.
+ * Light values are from the prototype (IMP-235 Option A). Dark values keep the
+ * teal/amber identity at dark-surface contrast (display layer, tunable).
+ */
+@layer base {
+  /* RGB channel triplets (space-separated) so Tailwind's `rgb(var(--x) /
+     <alpha-value>)` tokens support opacity modifiers. Light = prototype hexes
+     (#ECEAE5 / #017B82 / #B87D3A …); dark keeps the teal/amber identity. */
+  .se-theme {
+    --se-bg: 236 234 229;
+    --se-surface: 240 237 232;
+    --se-surface-2: 244 242 238;
+    --se-surface-offset: 229 226 220;
+    --se-border: 196 191 184;
+    --se-text: 28 26 22;
+    --se-muted: 99 95 89;
+    --se-inverse: 240 237 232;
+    --se-primary: 1 123 130;
+    --se-primary-hover: 1 94 100;
+    --se-accent: 184 125 58;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .se-theme {
+      --se-bg: 20 19 15;
+      --se-surface: 28 26 22;
+      --se-surface-2: 35 33 28;
+      --se-surface-offset: 42 40 35;
+      --se-border: 58 55 47;
+      --se-text: 240 237 232;
+      --se-muted: 168 163 154;
+      --se-inverse: 240 237 232;
+      --se-primary: 42 167 174;
+      --se-primary-hover: 31 142 149;
+      --se-accent: 198 138 71;
+    }
+  }
+}
+
 /* Tailwind animation utilities required by Radix Dialog */
 @layer utilities {
   .animate-in {
