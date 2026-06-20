@@ -100,6 +100,9 @@ export function BooksRescueFunnel() {
   const [step, setStep] = React.useState(0);
   const [answers, setAnswers] = React.useState<Partial<Answers>>({});
   const [result, setResult] = React.useState<ScoreResult | null>(null);
+  // Full-gate flag: the result/scorecard phase stays unreachable until the
+  // capture form POSTs successfully. Flipped true only in handleSubmit success.
+  const [submitted, setSubmitted] = React.useState(false);
 
   // Contact capture fields (controlled → naturally preserved across a failed submit).
   const [firstName, setFirstName] = React.useState("");
@@ -160,15 +163,16 @@ export function BooksRescueFunnel() {
     if (step > 0) setStep((s) => s - 1);
   }
 
-  // Analyzing → result.
+  // Analyzing → capture. Results are computed but withheld: the user lands on
+  // the capture form next, and the scorecard is revealed only after a
+  // successful submit (see handleSubmit).
   React.useEffect(() => {
     if (phase !== "analyzing") return;
     const t = window.setTimeout(() => {
-      setPhase("result");
-      if (result) track("books_rescue_view_result", { score: result.score, tier: result.tier });
+      setPhase("capture");
     }, 2600);
     return () => window.clearTimeout(t);
-  }, [phase, result]);
+  }, [phase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -222,8 +226,12 @@ export function BooksRescueFunnel() {
 
       if (res.ok && data?.ok) {
         track("generate_lead", { funnel: "books_rescue", score: result.score, tier: result.tier });
+        track("books_rescue_view_result", { score: result.score, tier: result.tier });
         setSubmitState("idle");
-        setPhase("booking");
+        // Gate opens only here — reveal the score/scorecard, computed client-side
+        // from answers already in state, so it appears instantly.
+        setSubmitted(true);
+        setPhase("result");
         return;
       }
 
@@ -241,7 +249,7 @@ export function BooksRescueFunnel() {
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
-    <div className="mx-auto w-full max-w-2xl px-5 pb-28 pt-7 sm:pb-16">
+    <div className="mx-auto w-full max-w-[46rem] px-5 pb-28 pt-7 text-[1.0625rem] leading-relaxed sm:pb-16">
       <Header />
 
       {phase === "cover" && <Cover onStart={startQuiz} />}
@@ -259,10 +267,6 @@ export function BooksRescueFunnel() {
       )}
 
       {phase === "analyzing" && <Analyzing />}
-
-      {phase === "result" && result && (
-        <Result result={result} answers={answers} onContinue={() => setPhase("capture")} />
-      )}
 
       {phase === "capture" && (
         <Capture
@@ -282,6 +286,10 @@ export function BooksRescueFunnel() {
           errorMessage={errorMessage}
           onSubmit={handleSubmit}
         />
+      )}
+
+      {phase === "result" && submitted && result && (
+        <Result result={result} answers={answers} onContinue={() => setPhase("booking")} />
       )}
 
       {phase === "booking" && <Booking firstName={firstName} email={email} />}
@@ -329,7 +337,7 @@ function Cover({ onStart }: { onStart: () => void }) {
       <h1 className="mt-4 font-display text-4xl font-normal leading-tight text-se-text sm:text-5xl">
         How healthy are your books, really?
       </h1>
-      <p className="mt-4 max-w-prose text-lg text-se-muted">
+      <p className="mt-4 max-w-prose text-xl text-se-muted">
         Most owners already sense when something is off. This diagnostic scores where your
         bookkeeping actually stands, names what needs attention first, and tells you the fastest
         next move.
@@ -514,7 +522,7 @@ function Result({
       <h1 className="mt-3 font-display text-3xl font-normal leading-tight text-se-text sm:text-4xl">
         {tier.headline}
       </h1>
-      <p className="mt-4 max-w-prose text-lg text-se-muted">{tier.intro}</p>
+      <p className="mt-4 max-w-prose text-xl text-se-muted">{tier.intro}</p>
 
       <div className="mt-6 rounded-2xl border border-se-border bg-se-surface p-6">
         <p className="text-se-text">{tier.diagnosis}</p>
@@ -613,13 +621,13 @@ function Capture({
   return (
     <section>
       <div className="mb-1 text-xs font-bold uppercase tracking-wider text-se-muted">
-        Your results are ready
+        Almost there
       </div>
       <h1 className="font-display text-3xl font-normal leading-tight text-se-text sm:text-4xl">
-        Where should we send your scorecard?
+        Your Books Rescue results are ready
       </h1>
       <p className="mt-3 max-w-prose text-se-muted">
-        We&apos;ll email a copy of your Books Rescue scorecard so you have it for the call.
+        Enter your details to see your score and personalized scorecard.
       </p>
 
       <form onSubmit={onSubmit} noValidate className="mt-6 grid gap-4">
@@ -725,7 +733,7 @@ function Capture({
         )}
 
         <PrimaryButton type="submit" disabled={submitState === "submitting"} className="w-full">
-          {submitState === "submitting" ? "Sending…" : "See my Books Rescue score →"}
+          {submitState === "submitting" ? "Sending…" : "See my results →"}
         </PrimaryButton>
 
         {submitState === "error" && (
