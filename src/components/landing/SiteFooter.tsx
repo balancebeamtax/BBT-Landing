@@ -1,3 +1,13 @@
+import Link from "next/link";
+
+const LEGAL_LINKS = [
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/disclaimer", label: "Disclaimer" },
+  { href: "/sms-terms", label: "SMS Terms" },
+  { href: "/contact", label: "Contact" },
+];
+
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
@@ -47,8 +57,20 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto max-w-container px-6 py-4 text-xs text-text-muted flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© {year} Balance Beam Bookkeeping &amp; Tax. All rights reserved.</p>
+        <div className="mx-auto max-w-container px-6 py-4 text-xs text-text-muted flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <p>© {year} Balance Beam Bookkeeping &amp; Tax. All rights reserved.</p>
+            <nav className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              {LEGAL_LINKS.map((link, i) => (
+                <span key={link.href} className="inline-flex items-center gap-x-2">
+                  {i > 0 && <span aria-hidden="true">·</span>}
+                  <Link href={link.href} className="text-cta-primary hover:underline">
+                    {link.label}
+                  </Link>
+                </span>
+              ))}
+            </nav>
+          </div>
           <p>Based in Pasadena, California.</p>
         </div>
       </div>
