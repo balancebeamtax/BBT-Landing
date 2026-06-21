@@ -110,6 +110,9 @@ export function BooksRescueFunnel() {
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [company, setCompany] = React.useState("");
+  // Explicit SMS opt-in. NOT required to submit (consent to texts can't gate the
+  // result) — it only gates downstream SMS: the value rides the payload to n8n/GHL.
+  const [consentSms, setConsentSms] = React.useState(false);
 
   const [submitState, setSubmitState] = React.useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -202,6 +205,7 @@ export function BooksRescueFunnel() {
       email: em,
       phone: phone.trim(),
       company_name: company.trim(),
+      consent_sms: consentSms,
       website_val: hpRef.current?.value ?? "",
       time_elapsed_ms: Date.now() - renderTimeRef.current,
       cf_turnstile_response: TURNSTILE_SITE_KEY ? readTurnstileToken() : "",
@@ -275,11 +279,13 @@ export function BooksRescueFunnel() {
           email={email}
           phone={phone}
           company={company}
+          consentSms={consentSms}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
           setPhone={setPhone}
           setCompany={setCompany}
+          setConsentSms={setConsentSms}
           hpRef={hpRef}
           submitState={submitState}
           formError={formError}
@@ -587,11 +593,13 @@ function Capture({
   email,
   phone,
   company,
+  consentSms,
   setFirstName,
   setLastName,
   setEmail,
   setPhone,
   setCompany,
+  setConsentSms,
   hpRef,
   submitState,
   formError,
@@ -603,11 +611,13 @@ function Capture({
   email: string;
   phone: string;
   company: string;
+  consentSms: boolean;
   setFirstName: (v: string) => void;
   setLastName: (v: string) => void;
   setEmail: (v: string) => void;
   setPhone: (v: string) => void;
   setCompany: (v: string) => void;
+  setConsentSms: (v: boolean) => void;
   hpRef: React.RefObject<HTMLInputElement>;
   submitState: SubmitState;
   formError: string;
@@ -725,6 +735,30 @@ function Capture({
             <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="auto" />
           </>
         )}
+
+        {/* SMS opt-in — explicit, optional (mirrors the Extension Cleanup form). */}
+        <label className="flex items-start gap-3 text-sm text-se-muted">
+          <input
+            type="checkbox"
+            checked={consentSms}
+            onChange={(e) => setConsentSms(e.target.checked)}
+            className="mt-0.5 h-4 w-4 flex-shrink-0 accent-se-primary"
+          />
+          <span>
+            I agree to receive recurring automated text messages from Balance
+            Beam Bookkeeping &amp; Tax at the phone number provided about my
+            results and related follow-up. Message and data rates may apply.
+            Reply STOP to opt out, HELP for help. See our{" "}
+            <a href="/sms-terms" className="underline hover:text-se-text">
+              SMS Terms
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" className="underline hover:text-se-text">
+              Privacy Policy
+            </a>
+            .
+          </span>
+        </label>
 
         {formError && (
           <p role="alert" className="text-sm font-semibold text-se-accent">
