@@ -20,7 +20,7 @@ export function LegalPage({
 }) {
   return (
     <>
-      <SiteHeader ctaHref="/#start" ctaLabel="Find your starting point" />
+      <SiteHeader ctaHref="/#start" ctaLabel="Find your starting point" ctaLabelShort="Start here" />
       <main className="bg-background">
         <article className="mx-auto max-w-prose px-6 py-16 md:py-20">
           <h1 className="font-serif text-4xl md:text-5xl font-semibold leading-tight text-text-primary">

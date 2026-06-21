@@ -55,7 +55,7 @@ const TRUST_SIGNALS = [
 export default function HomePage() {
   return (
     <>
-      <SiteHeader ctaHref="#start" ctaLabel="Find your starting point" />
+      <SiteHeader ctaHref="#start" ctaLabel="Find your starting point" ctaLabelShort="Start here" />
       <main className="bg-background">
         {/* Hero / router */}
         <section className="border-b border-border">
