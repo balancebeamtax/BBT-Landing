@@ -8,8 +8,8 @@ export function SiteFooter() {
             Balance Beam Bookkeeping &amp; Tax
           </p>
           <p className="text-text-muted mt-2 max-w-xs">
-            Small-business bookkeeping and tax preparation for owners who want a
-            year-round relationship — not a once-a-year scramble.
+            Diagnostic-led bookkeeping cleanup and tax-readiness reviews for
+            small-business owners.
           </p>
         </div>
 
