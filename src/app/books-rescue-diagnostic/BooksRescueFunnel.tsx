@@ -746,9 +746,9 @@ function Capture({
           />
           <span>
             I agree to receive recurring automated text messages from Balance
-            Beam at the phone number provided about my results and related
-            follow-up. Message and data rates may apply. Reply STOP to opt out.
-            See our{" "}
+            Beam Bookkeeping &amp; Tax at the phone number provided about my
+            results and related follow-up. Message and data rates may apply.
+            Reply STOP to opt out, HELP for help. See our{" "}
             <a href="/sms-terms" className="underline hover:text-se-text">
               SMS Terms
             </a>{" "}
