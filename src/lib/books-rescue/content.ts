@@ -95,8 +95,10 @@ const OPTION_LABELS: Record<QuestionKey, [string, string, string, string]> = {
 
 /** Verbatim question prompts (contract Section 2). */
 const PROMPTS: Record<QuestionKey, string> = {
+  // Q1 stem reworded for the capture-gate funnel (IMP-233 reorder); options below
+  // still read as time references, so they are unchanged.
   recency:
-    "When was the last time your books were where you'd want them — not in progress, but actually done?",
+    'When was the last time your books were fully caught up — done, not just in progress?',
   confidence:
     'If you needed to share your financials with someone outside the business today — accountant, lender, or partner — how ready would you feel?',
   deadline_pressure:
