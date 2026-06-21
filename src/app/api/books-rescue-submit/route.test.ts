@@ -348,6 +348,7 @@ describe('POST /api/books-rescue-submit', () => {
       'email',
       'phone',
       'company_name',
+      'consent_sms',
       'q_recency',
       'q_confidence',
       'q_deadline_pressure',
@@ -373,6 +374,33 @@ describe('POST /api/books-rescue-submit', () => {
     expect(fwd.email).toBe('jane@example.com');
     expect(fwd.tier).toBe('at-risk');
     expect(fwd.q_tx_complexity).toBe(3);
+  });
+
+  it('consent_sms=true → forwarded as boolean true (SMS gate open)', async () => {
+    const res = await POST(makeReq(validBody({ consent_sms: true })));
+    expect(res.status).toBe(200);
+    const [, init] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
+    const fwd = JSON.parse((init as RequestInit).body as string);
+    expect(fwd.consent_sms).toBe(true);
+  });
+
+  it('consent_sms absent or non-boolean → forwarded as false (SMS gate closed, fail safe)', async () => {
+    // absent
+    const res1 = await POST(makeReq(validBody()));
+    expect(res1.status).toBe(200);
+    const fwd1 = JSON.parse(
+      ((fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit).body as string
+    );
+    expect(fwd1.consent_sms).toBe(false);
+
+    // truthy-but-not-true ("true" string must NOT open the gate)
+    global.fetch = okFetch();
+    const res2 = await POST(makeReq(validBody({ consent_sms: 'true' })));
+    expect(res2.status).toBe(200);
+    const fwd2 = JSON.parse(
+      ((fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit).body as string
+    );
+    expect(fwd2.consent_sms).toBe(false);
   });
 
   it('forward URL is sourced from env, NOT from the request body', async () => {

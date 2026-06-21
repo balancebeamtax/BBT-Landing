@@ -181,6 +181,9 @@ export async function POST(req: NextRequest): Promise<Response> {
     email: emailRaw,
     phone: normalized.phone,
     company_name: normalized.company_name,
+    // SMS opt-in gate: coerce to a strict boolean so n8n/GHL only sends texts
+    // when the lead explicitly consented (anything but literal true → false).
+    consent_sms: body.consent_sms === true,
     website_val: hpStr,
     time_elapsed_ms: tNum,
     cf_turnstile_response: body.cf_turnstile_response,
